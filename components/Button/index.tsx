@@ -31,6 +31,11 @@ export default function Button(props: ButtonProps) {
         <Icon
           name={iconName}
           size={20}
+          color={
+            variant === "filled" || variant === "warn"
+              ? "var(--theme-text-inverse)"
+              : undefined
+          }
         />
       )}
       {!iconOnly && children}
