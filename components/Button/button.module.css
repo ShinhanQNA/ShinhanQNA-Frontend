@@ -34,3 +34,18 @@
   line-height: 20px;
   border-radius: 8px;
 }
+
+.filled {
+  background-color: var(--theme-background-inverse);
+  color: var(--theme-text-inverse);
+}
+
+.filled:hover {
+  background-color: #333333;
+}
+
+.filled:disabled {
+  background-color: var(--color-gray-700);
+  color: var(--theme-text-disabled);
+  cursor: not-allowed;
+}
