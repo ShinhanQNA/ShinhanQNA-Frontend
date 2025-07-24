@@ -96,3 +96,19 @@
   color: var(--theme-text-disabled);
   cursor: not-allowed;
 }
+
+.iconOnly.tiny {
+  padding: 6px;
+}
+
+.iconOnly.small {
+  padding: 8px;
+}
+
+.iconOnly.medium {
+  padding: 12px;
+}
+
+.iconOnly.big {
+  padding: 16px;
+}
