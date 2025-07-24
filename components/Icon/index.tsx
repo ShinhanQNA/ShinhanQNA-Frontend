@@ -5,11 +5,11 @@ import type { IconProps } from "@/types/icon";
 
 export default function Icon(props: IconProps) {
   // name: 아이콘 이름, size: 아이콘 크기, color: 색상, className: 추가 클래스
-  const { name, size = 24, color = "--theme-text-primary", className } = props;
+  const { name, size = 24, color = "var(--theme-text-primary)", className } = props;
 
   // 카카오톡 아이콘 여부 판별
   const isKakao = name === "kakaotalk";
-  // maga-phone, loud-speaker 여부 판별
+  // mega-phone, loud-speaker 여부 판별
   const isSpeaker = name === "mega-phone" || name === "loud-speaker";
 
   return (
