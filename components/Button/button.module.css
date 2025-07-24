@@ -8,3 +8,29 @@
   cursor: pointer;
   transition: background-color 0.2s, border-color 0.2s;
 }
+
+.tiny {
+  padding: 4px 8px;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.small {
+  padding: 8px 12px;
+  font-size: 14px;
+  line-height: 20px;
+  border-radius: 12px;
+}
+
+.medium {
+  padding: 12px 18px;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.big {
+  padding: 16px 24px;
+  font-size: 14px;
+  line-height: 20px;
+  border-radius: 8px;
+}
