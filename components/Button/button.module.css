@@ -66,3 +66,49 @@
   border-color: var(--theme-border-subtle);
   cursor: not-allowed;
 }
+
+.warn {
+  background-color: var(--theme-accent-error);
+  color: var(--theme-text-inverse);
+}
+
+.warn:hover {
+  background-color: var(--color-red-800);
+}
+
+.warn:disabled {
+  background-color: var(--color-red-500);
+  color: var(--theme-text-disabled);
+  cursor: not-allowed;
+}
+
+.transparent {
+  background-color: transparent;
+  color: var(--theme-text-primary);
+}
+
+.transparent:hover {
+  background-color: var(--color-gray-100);
+}
+
+.transparent:disabled {
+  background-color: transparent;
+  color: var(--theme-text-disabled);
+  cursor: not-allowed;
+}
+
+.iconOnly.tiny {
+  padding: 6px;
+}
+
+.iconOnly.small {
+  padding: 8px;
+}
+
+.iconOnly.medium {
+  padding: 12px;
+}
+
+.iconOnly.big {
+  padding: 16px;
+}
