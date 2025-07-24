@@ -49,3 +49,20 @@
   color: var(--theme-text-disabled);
   cursor: not-allowed;
 }
+
+.linear {
+  background-color: var(--theme-background-default);
+  color: var(--theme-text-primary);
+  border: 1px solid var(--theme-border-default);
+}
+
+.linear:hover {
+  background-color: var(--color-gray-100);
+}
+
+.linear:disabled {
+  background-color: var(--theme-background-default);
+  color: var(--theme-text-disabled);
+  border-color: var(--theme-border-subtle);
+  cursor: not-allowed;
+}
