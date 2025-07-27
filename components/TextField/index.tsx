@@ -1,0 +1,33 @@
+"use client";
+
+import { useId } from "react";
+import type { TextFieldProps } from "@/types/textfield";
+import styles from "./textfield.module.css";
+
+export default function TextField({
+  label,
+  helperText,
+  error = false,
+  className,
+  ...rest
+}: TextFieldProps) {;
+  const id = rest.id || useId();
+
+  const containerClassName = [
+    styles.textfield,
+    error ? styles.error : "",
+    className,
+  ]
+    .join(" ")
+    .trim();
+
+  return (
+    <div className={containerClassName}>
+      <label htmlFor={id} className={styles.label}>
+        {label}
+      </label>
+      <input {...rest} id={id} className={styles.input} />
+      {helperText && <p className={styles.helperText}>{helperText}</p>}
+    </div>
+  );
+}
