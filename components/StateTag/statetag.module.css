@@ -1,0 +1,19 @@
+.statetag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 12px;
+  border-radius: 20px;
+  font-size: var(--text-body-bold-3-size);
+  font-weight: var(--text-body-bold-3-weight);
+  line-height: var(--text-body-bold-3-line-height);
+  color: var(--theme-text-inverse);
+}
+
+.waiting {
+  background-color: var(--color-orange-900);
+}
+
+.completed {
+  background-color: var(--theme-accent-success);
+}
