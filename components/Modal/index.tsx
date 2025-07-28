@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { ModalProps } from '@/types/modal';
-import styles from './modal.module.css';
+import { ModalProps } from "@/types/modal";
+import styles from "./modal.module.css";
 
-const Modal: React.FC<ModalProps> = ({
+export default function Modal({
   isOpen,
   onClose,
   title,
   children,
   actions,
-}) => {
+}: ModalProps) {
   if (!isOpen) {
     return null;
   }
@@ -31,6 +31,4 @@ const Modal: React.FC<ModalProps> = ({
       </div>
     </div>
   );
-};
-
-export default Modal;
+}
