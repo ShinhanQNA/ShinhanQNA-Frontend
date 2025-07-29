@@ -57,6 +57,9 @@
   cursor: pointer;
   border-radius: 10px;
   transition: background-color 0.3s ease, color 0.3s ease;
+  font-size: var(--text-body-2-size);
+  font-weight: var(--text-body-2-weight);
+  line-height: var(--text-body-2-line-height);
   color: var(--theme-text-secondary);
 }
 
