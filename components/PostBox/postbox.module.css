@@ -9,7 +9,8 @@
 
 .post,
 .opinion,
-.notice {
+.notice,
+.signup {
   display: flex;
   flex-direction: column;
   align-items: flex-start;

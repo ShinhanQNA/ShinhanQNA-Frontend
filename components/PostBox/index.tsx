@@ -79,10 +79,30 @@ export default function PostBox(props: PostBoxProps) {
     return (
       <div className={`${styles.postBox}`}>
         <div className={styles.notice}>
-          <h3 className={styles.title}>{title}</h3>
-          <p className={styles.content}>{content}</p>
+          <h3 className={styles.title}>
+            {title}
+          </h3>
+          <p className={styles.content}>
+            {content}
+          </p>
         </div>
       </div>
     );
   }
+
+  if (type === "signup") {
+    return (
+      <div className={`${styles.postBox}`}>  
+        <div className={styles.signup}>
+          <h3 className={styles.title}>
+            {title}
+          </h3>
+          <p className={styles.content}>
+            {content}
+          </p>
+        </div>
+      </div>
+    );
+  }
+  return null;
 }
