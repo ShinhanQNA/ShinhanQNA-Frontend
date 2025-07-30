@@ -32,6 +32,10 @@
   text-overflow: ellipsis;
 }
 
+.title:hover {
+  text-decoration: underline;
+}
+
 .content {
   font-size: var(--text-body-2-size);
   font-weight: var(--text-body-2-weight);

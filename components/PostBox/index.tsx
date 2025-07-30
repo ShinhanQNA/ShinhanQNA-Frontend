@@ -1,4 +1,5 @@
 
+import Link from "next/link";
 import { PostBoxProps } from "@/types/postbox";
 import Icon from "@/components/Icon";
 import Select from "@/components/Select";
@@ -6,12 +7,12 @@ import Statetag from "@/components/StateTag";
 import styles from "./postbox.module.css";
 
 export default function PostBox(props: PostBoxProps) {
-  const { type, isAdmin, title, content, likes, flags, bans, opinions, status } = props;
+  const { type, isAdmin, slug, title, content, likes, flags, bans, opinions, status } = props;
 
   if (type === "post") {
     return (
       <div className={`${styles.postBox} ${isAdmin ? styles.admin : ""}`}>
-        <div className={styles.post}>
+        <Link href={`/${slug}`} className={styles.post}>
           <h3 className={styles.title}>
             {title}
           </h3>
@@ -36,7 +37,7 @@ export default function PostBox(props: PostBoxProps) {
               </div>
             )}
           </div>
-        </div>
+        </Link>
         {isAdmin && (
           <Select
             className={styles.select}
@@ -53,7 +54,7 @@ export default function PostBox(props: PostBoxProps) {
   if (type === "opinion") {
     return (
       <div className={`${styles.postBox} ${isAdmin ? styles.admin : ""}`}>
-        <div className={styles.opinion}>
+        <Link href={`/opinions/${slug}`} className={styles.opinion}>
           <h3 className={styles.title}>
             {title}
           </h3>
@@ -61,7 +62,7 @@ export default function PostBox(props: PostBoxProps) {
             의견 {opinions}개
           </p>
           <Statetag type={status || "waiting"} />
-        </div>
+        </Link>
         {isAdmin && (
           <Select
             className={styles.select}
@@ -78,14 +79,14 @@ export default function PostBox(props: PostBoxProps) {
   if (type === "notice") {
     return (
       <div className={`${styles.postBox}`}>
-        <div className={styles.notice}>
+        <Link href={`/notices/${slug}`} className={styles.notice}>
           <h3 className={styles.title}>
             {title}
           </h3>
           <p className={styles.content}>
             {content}
           </p>
-        </div>
+        </Link>
       </div>
     );
   }
@@ -93,14 +94,14 @@ export default function PostBox(props: PostBoxProps) {
   if (type === "signup") {
     return (
       <div className={`${styles.postBox}`}>  
-        <div className={styles.signup}>
+        <Link href={`/signupreqs/${slug}`} className={styles.signup}>
           <h3 className={styles.title}>
             {title}
           </h3>
           <p className={styles.content}>
             {content}
           </p>
-        </div>
+        </Link>
       </div>
     );
   }
