@@ -49,4 +49,29 @@ export default function PostBox(props: PostBoxProps) {
       </div>
     );
   }
+
+  if (type === "opinion") {
+    return (
+      <div className={`${styles.postBox} ${isAdmin ? styles.admin : ""}`}>
+        <div className={styles.opinion}>
+          <h3 className={styles.title}>
+            {title}
+          </h3>
+          <p className={styles.content}>
+            의견 {opinions}개
+          </p>
+          <Statetag type={status || "waiting"} />
+        </div>
+        {isAdmin && (
+          <Select
+            className={styles.select}
+            options={[]}
+            value={null}
+            onChange={() => {}}
+            placeholder="응답 상태"
+          />
+        )}
+      </div>
+    );
+  }
 }
