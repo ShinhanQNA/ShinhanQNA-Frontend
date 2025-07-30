@@ -74,4 +74,15 @@ export default function PostBox(props: PostBoxProps) {
       </div>
     );
   }
+
+  if (type === "notice") {
+    return (
+      <div className={`${styles.postBox}`}>
+        <div className={styles.notice}>
+          <h3 className={styles.title}>{title}</h3>
+          <p className={styles.content}>{content}</p>
+        </div>
+      </div>
+    );
+  }
 }
