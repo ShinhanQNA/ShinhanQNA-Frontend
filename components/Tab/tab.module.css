@@ -21,17 +21,10 @@
   align-self: stretch;
   flex: 1 0 0;
   transition: color 0.3s ease;
-  z-index: 1;
 }
 
 .item.focused {
   color: var(--theme-text-primary);
-}
-
-.underline {
-  position: absolute;
-  bottom: -1px;
-  height: 2px;
-  background-color: var(--theme-text-primary);
-  transition: left 0.3s ease-in-out, width 0.3s ease-in-out;
+  margin-bottom: -1px;
+  border-bottom: 2px solid var(--theme-text-primary);
 }
