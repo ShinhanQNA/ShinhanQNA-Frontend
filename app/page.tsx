@@ -41,13 +41,13 @@ export default function Home() {
   ) : tab === "⭐️ 선정된 의견" ? (
     <>
       {posts.map((post) => (
-        <PostBox type="opinion" key={post.id} slug={post.id} title={post.title} content={post.content} />
+        <PostBox type="selected" key={post.id} slug={post.id} title={post.title} content={post.content} />
       ))}
     </>
   ) : (
     <>
       {posts.map((post) => (
-        <PostBox type="notice" key={post.id} slug={post.id} title={post.title} content={post.content} />
+        <PostBox type="notice" key={post.id} path="answer" slug={post.id} title={post.title} content={post.content} />
       ))}
     </>
   );
