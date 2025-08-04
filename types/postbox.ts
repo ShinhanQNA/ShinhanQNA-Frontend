@@ -1,6 +1,7 @@
 export interface PostBoxProps {
-  type: "post" | "opinion" | "notice" | "signup";
+  type: "post" | "selected" | "notice" | "signup";
   isAdmin?: boolean;
+  path?: string;
   slug: number;
   title: string;
   content?: string;
