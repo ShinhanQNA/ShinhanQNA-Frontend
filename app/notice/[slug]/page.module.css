@@ -35,7 +35,8 @@
     gap: 32px;
   }
 
-  .title {
+  .title,
+  .paragraph {
     padding: 0 20px;
   }
 }
