@@ -17,6 +17,7 @@
   font-weight: var(--text-title-2-weight);
   line-height: var(--text-title-2-line-height);
   color: var(--theme-text-primary);
+  padding-bottom: 16px;
 }
 
 @media (max-width: 886px) {
