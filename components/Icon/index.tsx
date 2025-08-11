@@ -3,10 +3,12 @@ import svgPath from "./icons.json";
 
 import type { IconProps } from "@/types/icon";
 
-export default function Icon(props: IconProps) {
-  // name: 아이콘 이름, size: 아이콘 크기, color: 색상, className: 추가 클래스
-  const { name, size = 24, color = "var(--theme-text-primary)", className } = props;
-
+export default function Icon({
+  name,
+  size = 24,
+  color = "var(--theme-text-primary)",
+  className
+}: IconProps) {
   // 카카오톡 아이콘 여부 판별
   const isKakao = name === "kakaotalk";
   // mega-phone, loud-speaker 여부 판별
