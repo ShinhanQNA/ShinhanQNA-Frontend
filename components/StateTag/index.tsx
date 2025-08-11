@@ -1,9 +1,10 @@
 import type { StateTagProps } from "@/types/statetag";
 import styles from "./statetag.module.css";
 
-export default function StateTag(props: StateTagProps) {
-  const { type, className } = props;
-
+export default function StateTag({
+  type,
+  className
+}: StateTagProps) {
   const stateTagClassName = [
     styles.statetag,
     styles[type],
