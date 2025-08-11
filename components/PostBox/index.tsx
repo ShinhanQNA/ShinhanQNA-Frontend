@@ -5,12 +5,19 @@ import Select from "@/components/Select";
 import Statetag from "@/components/StateTag";
 import styles from "./postbox.module.css";
 
-function Post(props: PostBoxProps) {
-  const { slug, title, content, likes, flags, bans, isAdmin } = props;
-
+function Post({
+  path = "",
+  slug,
+  title,
+  content,
+  likes,
+  flags,
+  bans,
+  isAdmin
+}: PostBoxProps) {
   return (
     <>
-      <Link href={`/${slug}`} className={styles.post}>
+      <Link href={`${path}/${slug}`} className={styles.post}>
         <h3 className={styles.title}>
           {title}
         </h3>
@@ -54,7 +61,7 @@ function Selected(props: PostBoxProps) {
 
   return (
     <>
-      <Link href={`/${path}/${slug}`} className={styles.opinion}>
+      <Link href={`${path}/${slug}`} className={styles.opinion}>
           <h3 className={styles.title}>
             {title}
           </h3>
@@ -80,7 +87,7 @@ function Notice(props: PostBoxProps) {
   const { path = "notice", slug, title, content } = props;
 
   return (
-    <Link href={`/${path}/${slug}`} className={styles.notice}>
+    <Link href={`${path}/${slug}`} className={styles.notice}>
       <h3 className={styles.title}>
         {title}
       </h3>
@@ -95,7 +102,7 @@ function Signup(props: PostBoxProps) {
   const { path = "signupreqs", slug, title, content } = props;
 
   return (
-    <Link href={`/${path}/${slug}`} className={styles.signup}>
+    <Link href={`${path}/${slug}`} className={styles.signup}>
       <h3 className={styles.title}>
         {title}
       </h3>
