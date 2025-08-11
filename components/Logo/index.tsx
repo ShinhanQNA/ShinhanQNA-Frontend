@@ -1,6 +1,11 @@
 import { LogoProps } from "@/types/logo";
 
-export default function Logo({ size = 64, className, type = "icon", textColor = "var(--theme-text-primary)" }: LogoProps) {
+export default function Logo({
+  size = 64,
+  className,
+  type = "icon",
+  textColor = "var(--theme-text-primary)"
+}: LogoProps) {
   return type === "icon" ? (
     <svg
       width={size}
