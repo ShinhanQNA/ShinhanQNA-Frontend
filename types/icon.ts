@@ -20,7 +20,6 @@ export type IconName =
   | "globe"
   | "house"
   | "image"
-  | "kakaotalk"
   | "layout-panel-top"
   | "list"
   | "log-in"
