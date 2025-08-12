@@ -84,7 +84,7 @@
 }
 
 .transparent {
-  padding: 0;
+  padding: 4px;
   background-color: transparent;
   color: var(--theme-text-primary);
 }
