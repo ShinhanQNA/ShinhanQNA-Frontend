@@ -1,0 +1,85 @@
+.page {
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 570px 1fr;
+}
+
+.aside {
+  padding: 48px;
+  display: flex;
+  background-image: linear-gradient(0deg, color-mix(in srgb, var(--theme-background-subtle) 70%, transparent), color-mix(in srgb, var(--theme-background-subtle) 70%, transparent)), url("/campus_main.jpg");
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-color: var(--theme-background-subtle);
+}
+
+.main {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 48px;
+}
+
+.title {
+  font-size: var(--text-title-1-size);
+  font-weight: var(--text-title-1-weight);
+  line-height: var(--text-title-1-line-height);
+  color: var(--theme-text-primary);
+}
+
+.content {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.button {
+  width: 100%;
+}
+
+.apple {
+  font-size: var(--text-body-bold-2-size);
+  font-weight: var(--text-body-bold-2-weight);
+  line-height: var(--text-body-bold-2-line-height);
+}
+
+.kakao {
+  background-color: #FEE500;
+  color: var(--theme-text-primary);
+}
+
+.kakao:hover {
+  background-color: #EAD300
+}
+
+.admin {
+  width: auto;
+  color: var(--theme-text-tertiary);
+}
+
+@media (max-width: 886px) {
+  .page {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 64px 20px 48px;
+  }
+
+  .aside {
+    display: flex;
+    align-self: center;
+    padding: 0;
+    background: none;
+  }
+
+  .title {
+    display: none;
+  }
+}
