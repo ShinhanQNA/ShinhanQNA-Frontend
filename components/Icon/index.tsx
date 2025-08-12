@@ -18,6 +18,7 @@ export default function Icon({
       width={size}
       height={size}
       viewBox="0 0 24 24"
+      fill="none"
       className={`${styles.icon} ${className ?? ""}`.trim()} // 스타일 및 추가 클래스 적용
     >
       {/* SVG path 데이터 적용, stroke는 color 사용 */}
