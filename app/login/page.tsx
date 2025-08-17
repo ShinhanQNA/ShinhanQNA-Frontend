@@ -1,5 +1,8 @@
+"use client";
+
 import Logo from "@/components/Logo";
 import Button from "@/components/Button";
+import KakaoLogin from "@/utils/oauth/kakao";
 import styles from "./page.module.css";
 
 export default function Login() {
@@ -39,6 +42,7 @@ export default function Login() {
             </>}
           />
           <Button
+            onClick={KakaoLogin}
             className={`${styles.button} ${styles.kakao}`}
             children={<>
               <svg xmlns="http://www.w3.org/2000/svg" width="21" height="20" viewBox="0 0 21 20" fill="none">
