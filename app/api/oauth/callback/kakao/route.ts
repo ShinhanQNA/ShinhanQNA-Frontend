@@ -21,7 +21,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
     // CSRF 공격 방지를 위한 state 검증 (Double Submit Cookie)
     const cookieStore = await cookies();
-    const savedState = cookieStore.get("kakao_oauth_state")?.value;
+    const savedState = cookieStore.get("oauth_state")?.value;
     if (!savedState || savedState !== state) {
       return NextResponse.json(
         { error: "유효하지 않은 state입니다." },
