@@ -10,8 +10,9 @@ export default function TextField({
   error = false,
   className,
   ...rest
-}: TextFieldProps) {;
-  const id = rest.id || useId();
+}: TextFieldProps) {
+  const autoId = useId();
+  const id = rest.id || autoId;
 
   const containerClassName = [
     styles.textfield,
