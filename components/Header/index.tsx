@@ -16,24 +16,27 @@ export default function Header() {
               variant="linear"
               size="small"
               iconName="plus"
-              children="새 게시글"
-            />
+            >
+              새 게시글
+            </Button>
           </Link>
           <Link href="/notice">
             <Button
               variant="linear"
               size="small"
               iconName="loud-speaker"
-              children="공지사항"
-            />
+            >
+              공지사항
+            </Button>
           </Link>
           <Link href="/profile">
             <Button
               variant="linear"
               size="small"
               iconName="user"
-              children="프로필"
-            />
+            >
+              프로필
+            </Button>
           </Link>
         </div>
       </div>

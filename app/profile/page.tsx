@@ -20,35 +20,39 @@ export default function Profile() {
                   variant="filled"
                   iconName="list"
                   className={styles.button}
-                  children="내 게시물"
-                />
+                >
+                  내 게시물
+                </Button>
               </Link>
               <Link href="/coffee">
                 <Button
                   variant="filled"
                   iconName="coffee"
                   className={styles.button}
-                  children="커피 사기"
-                />
+                >
+                  커피 사기
+                </Button>
               </Link>
             </div>
             <div className={styles.actions}>
               <Button
                 variant="transparent"
                 iconName="log-out"
-                children="로그아웃"
                 onClick={() => {
                   // 로그아웃 로직을 여기에 추가 예정
                 }}
-              />
+              >
+                로그아웃
+              </Button>
               <Button
                 variant="transparent"
                 iconName="circle-slash"
-                children="회원 탈퇴"
                 onClick={() => {
                   // 회원 탈퇴 로직을 여기에 추가 예정
                 }}
-              />
+              >
+                회원 탈퇴
+              </Button>
             </div>
           </div>
         </div>
