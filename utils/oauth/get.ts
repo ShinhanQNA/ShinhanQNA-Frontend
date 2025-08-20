@@ -1,9 +1,10 @@
-import { BackendJWTRequest, BackendJWTResponse } from "@/types/jwt";
+import JWTToken from "@/types/token";
+import JWTExchange from "@/types/exchange";
 
 export default async function GetJWTToken({
   variant,
   token
-}: BackendJWTRequest): Promise<BackendJWTResponse> {
+}: JWTExchange): Promise<JWTToken> {
   const backendUrl = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/oauth/callback/${variant}`;
   if (!process.env.NEXT_PUBLIC_BACKEND_BASE_URL) {
     console.error("백엔드 서버 주소(BACKEND_BASE_URL)가 설정되지 않았습니다.");

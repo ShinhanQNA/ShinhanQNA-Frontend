@@ -33,7 +33,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     });
 
     // 성공 처리: 토큰을 쿠키에 저장하고 리디렉션
-    return SaveJWTToken(origin, backendToken);
+    return await SaveJWTToken(origin, backendToken);
   } catch (error) {
     // 모든 과정에서 발생한 에러 처리
     return HandleError(error, req.url);

@@ -1,31 +1,24 @@
 import { NextResponse } from "next/server";
-import { BackendJWTResponse } from "@/types/jwt";
+import { cookies } from "next/headers";
 import { KakaoStateCookieCleanUp } from "./state";
+import JWTToken from "@/types/token";
+import SetJWTToken from "./set";
 
-export default function SaveJWTToken(origin: string, tokens: BackendJWTResponse): NextResponse {
-  const response = NextResponse.redirect(new URL("/", origin), 302);
+export default async function SaveJWTToken(origin: string, tokens: JWTToken): Promise<NextResponse> {
+  const fallback = "/";
+  const store = await cookies();
+  const redirectCookie = store.get("redirect_after_login")?.value;
+  const targetPath = redirectCookie && redirectCookie.startsWith("/") ? redirectCookie : fallback;
+  const response = NextResponse.redirect(new URL(targetPath, origin), 302);
   const isSecure = origin.startsWith("https://");
 
-  // CSRF state 쿠키 정리 (공용 함수)
+  // CSRF state 쿠키 정리
   KakaoStateCookieCleanUp(response);
 
-  // 서비스 액세스 토큰 설정 (HttpOnly, Secure, SameSite=Lax)
-  response.cookies.set("access_token", tokens.access_token, {
-    httpOnly: true,
-    secure: isSecure,
-    sameSite: "lax",
-    path: "/",
-    maxAge: tokens.expires_in,
-  });
+  // 공통 토큰 쿠키 설정 함수 사용
+  SetJWTToken(response, tokens, isSecure);
 
-  // 서비스 리프레시 토큰 설정 (HttpOnly, Secure, SameSite=Lax)
-  response.cookies.set("refresh_token", tokens.refresh_token, {
-    httpOnly: true,
-    secure: isSecure,
-    sameSite: "lax",
-    path: "/",
-    maxAge: 7 * 24 * 60 * 60,
-  });
-
+  // redirect_after_login 쿠키 제거
+  response.cookies.set("redirect_after_login", "", { path: "/", maxAge: 0 });
   return response;
 }
