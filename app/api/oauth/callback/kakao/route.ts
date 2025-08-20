@@ -13,20 +13,14 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
     // 인가 코드 및 state 파라미터 확인
     if (!code || !state) {
-      return NextResponse.json(
-        { error: "인가 코드 또는 state가 없습니다." },
-        { status: 400 },
-      );
+      return HandleError(new Error("login_failed"), req.url);
     }
 
     // CSRF 공격 방지를 위한 state 검증 (Double Submit Cookie)
     const cookieStore = await cookies();
     const savedState = cookieStore.get("oauth_state")?.value;
     if (!savedState || savedState !== state) {
-      return NextResponse.json(
-        { error: "유효하지 않은 state입니다." },
-        { status: 400 },
-      );
+      return HandleError(new Error("unauthorized"), req.url);
     }
 
     // 카카오에 토큰 요청
