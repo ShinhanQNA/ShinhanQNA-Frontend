@@ -56,9 +56,14 @@ function Post({
   );
 }
 
-function Selected(props: PostBoxProps) {
-  const { path = "selected", slug, title, opinions, status, isAdmin } = props;
-
+function Selected({
+  path = "selected",
+  slug,
+  title,
+  opinions,
+  status,
+  isAdmin
+}: PostBoxProps) {
   return (
     <>
       <Link href={`${path}/${slug}`} className={styles.opinion}>
@@ -83,9 +88,12 @@ function Selected(props: PostBoxProps) {
   );
 }
 
-function Notice(props: PostBoxProps) {
-  const { path = "notice", slug, title, content } = props;
-
+function Notice({
+  path = "notice",
+  slug,
+  title,
+  content
+}: PostBoxProps) {
   return (
     <Link href={`${path}/${slug}`} className={styles.notice}>
       <h3 className={styles.title}>
@@ -98,9 +106,12 @@ function Notice(props: PostBoxProps) {
   );
 }
 
-function Signup(props: PostBoxProps) {
-  const { path = "signupreqs", slug, title, content } = props;
-
+function Signup({
+  path = "signupreqs",
+  slug,
+  title,
+  content
+}: PostBoxProps) {
   return (
     <Link href={`${path}/${slug}`} className={styles.signup}>
       <h3 className={styles.title}>
@@ -113,8 +124,11 @@ function Signup(props: PostBoxProps) {
   );
 }
 
-export default function PostBox(props: PostBoxProps) {
-  const { type, isAdmin } = props;
+export default function PostBox({
+  type,
+  isAdmin,
+  ...rest
+}: PostBoxProps) {
   const types = {
     post: Post,
     selected: Selected,
@@ -126,6 +140,11 @@ export default function PostBox(props: PostBoxProps) {
 
   return (
     <div className={`${styles.postBox} ${isAdmin ? styles.admin : ""}`}>
-      <Content {...props} />
+      <Content
+        type={type}
+        isAdmin={isAdmin}
+        {...rest}
+      />
     </div>
-  );}
+  );
+}
