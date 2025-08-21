@@ -1,5 +1,5 @@
 import { NextResponse, NextRequest } from "next/server";
-import { cookies } from "next/headers";
+import GetCookie from "@/utils/cookie/get";
 import GetJWTToken from "@/utils/oauth/get";
 import SaveJWTToken from "@/utils/oauth/save";
 import HandleError from "@/utils/oauth/error";
@@ -17,8 +17,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     }
 
     // CSRF 공격 방지를 위한 state 검증 (Double Submit Cookie)
-    const cookieStore = await cookies();
-    const savedState = cookieStore.get("oauth_state")?.value;
+    const savedState = await GetCookie("oauth_state");
     if (!savedState || savedState !== state) {
       return HandleError(new Error("unauthorized"), req.url);
     }

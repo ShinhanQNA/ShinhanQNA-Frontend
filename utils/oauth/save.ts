@@ -1,13 +1,12 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
+import GetCookie from "../cookie/get";
 import { KakaoStateCookieCleanUp } from "./state";
 import JWTToken from "@/types/token";
 import SetJWTToken from "./set";
 
 export default async function SaveJWTToken(origin: string, tokens: JWTToken): Promise<NextResponse> {
   const fallback = "/";
-  const store = await cookies();
-  const redirectCookie = store.get("redirect_after_login")?.value;
+  const redirectCookie = await GetCookie("redirect_after_login");
   const targetPath = redirectCookie && redirectCookie.startsWith("/") ? redirectCookie : fallback;
   const response = NextResponse.redirect(new URL(targetPath, origin), 302);
   const isSecure = origin.startsWith("https://");
