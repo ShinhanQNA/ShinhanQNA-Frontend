@@ -77,3 +77,6 @@ async function GetKakaoToken(code: string): Promise<KakaoTokenResponse> {
 
   return response.json();
 }
+
+// 캐시 방지
+export const dynamic = "force-dynamic";
