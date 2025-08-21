@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { KakaoStateCookieCleanUp } from "@/utils/oauth/state";
+import DeleteCookie from "../cookie/delete";
 
 export default function HandleError(error: any, requestUrl: string): NextResponse {
   const url = new URL(requestUrl);
@@ -14,6 +14,6 @@ export default function HandleError(error: any, requestUrl: string): NextRespons
 
   const response = NextResponse.redirect(redirectUrl, 302);
   // CSRF state 쿠키 정리
-  KakaoStateCookieCleanUp(response);
+  DeleteCookie("oauth_state");
   return response;
 }
