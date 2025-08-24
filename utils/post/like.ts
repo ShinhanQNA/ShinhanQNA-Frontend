@@ -1,6 +1,6 @@
 import Like from "@/types/like";
 
-export default async function DoLike(accessToken: string, postId: string): Promise<Like | null> {
+export default async function DoLike(accessToken: string, postId: string): Promise<Like> {
   if (!accessToken) {
     throw new Error("unauthorized");
   }

@@ -1,6 +1,6 @@
 import Post from "@/types/post";
 
-export default async function GetPost(accessToken: string, postId: string): Promise<Post | null> {
+export default async function GetPost(accessToken: string, postId: string): Promise<Post> {
   if (!accessToken) {
     throw new Error("unauthorized");
   }
