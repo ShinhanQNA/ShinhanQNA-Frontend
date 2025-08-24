@@ -97,7 +97,6 @@ function redirectToLogin(req: NextRequest) {
   if (targetPath && targetPath !== "/login" && targetPath.startsWith("/")) {
     // 로그인 후 리다이렉트할 경로를 쿠키에 저장 (오픈 리다이렉트 방지)
     res.cookies.set("redirect_after_login", targetPath, {
-      maxAge: 600, // 10분
       httpOnly: true,
       secure: SECURE,
       sameSite: "lax",
