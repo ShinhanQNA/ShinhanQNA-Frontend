@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import GetPost from "@/utils/post/post";
+import GetPost from "@/utils/post/get";
 
 export async function GET(req: NextRequest) {
   // request-header로 access_token 받기

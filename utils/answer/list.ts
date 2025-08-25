@@ -1,4 +1,4 @@
-import AnswerPosts from "@/types/answerpost";
+import AnswerPosts from "@/types/answerlist";
 
 export default async function GetAnswerPosts(accessToken: string): Promise<AnswerPosts[]> {
   if (!accessToken) {

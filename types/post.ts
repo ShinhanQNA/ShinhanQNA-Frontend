@@ -1,4 +1,4 @@
-export default interface GeneralPost {
+export default interface Post {
   postId: number;
   title: string;
   content: string;

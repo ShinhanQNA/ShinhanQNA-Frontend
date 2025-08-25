@@ -1,4 +1,4 @@
-export default interface AnswerPosts {
+export default interface AnswerList {
   postId: number;
   title: string;
   content: string;

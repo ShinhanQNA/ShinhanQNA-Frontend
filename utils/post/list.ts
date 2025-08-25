@@ -1,6 +1,6 @@
-import GeneralPost from "@/types/generalpost";
+import PostList from "@/types/postlist";
 
-export default async function GetGeneralPosts(accessToken: string): Promise<GeneralPost[]> {
+export default async function GetPostList(accessToken: string): Promise<PostList[]> {
   if (!accessToken) {
     throw new Error("unauthorized");
   }
@@ -20,6 +20,6 @@ export default async function GetGeneralPosts(accessToken: string): Promise<Gene
     throw new Error("fetch_failed");
   }
 
-  const data: GeneralPost[] = await res.json();
+  const data: PostList[] = await res.json();
   return data;
 }
