@@ -1,28 +1,21 @@
-"use client";
-
 import Header from "@/components/Header";
 import PostBox from "@/components/PostBox";
 import Footer from "@/components/Footer";
+import GetCookie from "@/utils/cookie/get";
+import NoticeList from "@/types/noticelist";
 import styles from "./page.module.css";
 
-export default function Notice() {
-  const notices = [
-    {
-      id: 1,
-      title: "첫 번째 게시글",
-      content: "이것은 첫 번째 게시글의 내용입니다.",
-    },
-    {
-      id: 2,
-      title: "두 번째 게시글",
-      content: "이것은 두 번째 게시글의 내용입니다.",
-    },
-    {
-      id: 3,
-      title: "세 번째 게시글",
-      content: "이것은 세 번째 게시글의 내용입니다.",
-    },
-  ];
+export default async function Notice() {
+  const accessToken = (await GetCookie("access_token")) || "";
+
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/notices`, {
+    method: "GET",
+    headers: {
+      Authorization: accessToken
+    }
+  });
+
+  const notices: NoticeList[] = await res.json();
 
   return (
     <main className={styles.page}>
