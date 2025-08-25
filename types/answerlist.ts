@@ -1,5 +1,5 @@
 export default interface AnswerList {
-  postId: number;
+  id: number;
   title: string;
   content: string;
   createdAt: string;
