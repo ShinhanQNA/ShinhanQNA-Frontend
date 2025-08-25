@@ -1,6 +1,6 @@
 import AnswerPosts from "@/types/answerlist";
 
-export default async function GetAnswerPosts(accessToken: string): Promise<AnswerPosts[]> {
+export default async function GetAnswerList(accessToken: string): Promise<AnswerPosts[]> {
   if (!accessToken) {
     throw new Error("unauthorized");
   }
