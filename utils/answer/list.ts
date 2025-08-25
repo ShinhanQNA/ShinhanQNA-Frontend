@@ -1,6 +1,6 @@
-import AnswerPosts from "@/types/answerlist";
+import AnswerList from "@/types/answerlist";
 
-export default async function GetAnswerList(accessToken: string): Promise<AnswerPosts[]> {
+export default async function GetAnswerList(accessToken: string): Promise<AnswerList[]> {
   if (!accessToken) {
     throw new Error("unauthorized");
   }
@@ -20,6 +20,6 @@ export default async function GetAnswerList(accessToken: string): Promise<Answer
     throw new Error("fetch_failed");
   }
 
-  const data: AnswerPosts[] = await res.json();
+  const data: AnswerList[] = await res.json();
   return data;
 }
