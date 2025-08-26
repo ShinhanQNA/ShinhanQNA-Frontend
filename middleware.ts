@@ -17,7 +17,7 @@ const GRACE_MS = 2000;
 const SECURE = process.env.NODE_ENV === "production";
 
 // 퍼블릭 경로 여부
-function isPublicPath(pathname: string) {
+function IsPublicPath(pathname: string) {
   if (pathname === "/") return true; // 홈만 공개
   if (pathname.startsWith("/_next/")) return true; // Next 정적 빌드 산출물
   if (pathname === "/favicon.ico") return true;
@@ -31,7 +31,7 @@ function isPublicPath(pathname: string) {
 }
 
 // access_exp 쿠키 기반 만료 판단 (없으면 만료로 간주)
-function isAccessExpired(expMsCookie?: string | undefined) {
+function IsAccessExpired(expMsCookie?: string | undefined) {
   if (!expMsCookie) return true;
   const expMs = Number(expMsCookie);
   if (Number.isNaN(expMs)) return true;
@@ -39,7 +39,7 @@ function isAccessExpired(expMsCookie?: string | undefined) {
 }
 
 // 내부 API 호출: 리프레시로 무음 재발급
-async function silentlyReissue(origin: string, refreshToken: string): Promise<JWTToken | null> {
+async function SilentlyReissue(origin: string, refreshToken: string): Promise<JWTToken | null> {
   try {
     const res = await fetch(`${origin}/api/oauth/reissue`, {
       method: "POST",
@@ -57,7 +57,7 @@ async function silentlyReissue(origin: string, refreshToken: string): Promise<JW
 }
 
 // 공통 토큰 쿠키 설정
-function setJWTToken(res: NextResponse, tokens: JWTToken) {
+function SetJWTToken(res: NextResponse, tokens: JWTToken) {
   res.cookies.set("access_token", tokens.access_token, {
     httpOnly: true,
     secure: SECURE,
@@ -88,7 +88,7 @@ function setJWTToken(res: NextResponse, tokens: JWTToken) {
   return res;
 }
 
-function redirectToLogin(req: NextRequest) {
+function RedirectToLogin(req: NextRequest) {
   const loginUrl = new URL("/login", req.nextUrl.origin);
   const targetPath = req.nextUrl.pathname + (req.nextUrl.search || "");
   const res = NextResponse.redirect(loginUrl, 302);
@@ -116,15 +116,15 @@ export async function middleware(req: NextRequest) {
   const accessToken = req.cookies.get("access_token")?.value;
   const refreshToken = req.cookies.get("refresh_token")?.value;
   const accessExp = req.cookies.get("access_exp")?.value;
-  const expired = isAccessExpired(accessExp);
+  const expired = IsAccessExpired(accessExp);
 
   // 퍼블릭 경로: 토큰이 없거나 만료이면 조용히 재발급 시도 (성공 시 쿠키만 세팅 후 그대로 통과)
-  if (isPublicPath(pathname)) {
+  if (IsPublicPath(pathname)) {
     if (!accessToken || expired) {
       if (refreshToken) {
-        const issued = await silentlyReissue(req.nextUrl.origin, refreshToken);
+        const issued = await SilentlyReissue(req.nextUrl.origin, refreshToken);
         if (issued) {
-          return setJWTToken(baseRes, issued);
+          return SetJWTToken(baseRes, issued);
         }
       }
     }
@@ -134,12 +134,12 @@ export async function middleware(req: NextRequest) {
   // 보호 경로: 토큰 없거나 만료면 재발급; 실패 시 로그인으로
   if (!accessToken || expired) {
     if (refreshToken) {
-      const issued = await silentlyReissue(req.nextUrl.origin, refreshToken);
+      const issued = await SilentlyReissue(req.nextUrl.origin, refreshToken);
       if (issued) {
-        return setJWTToken(baseRes, issued);
+        return SetJWTToken(baseRes, issued);
       }
     }
-    return redirectToLogin(req);
+    return RedirectToLogin(req);
   }
 
   // 유효 토큰 통과
