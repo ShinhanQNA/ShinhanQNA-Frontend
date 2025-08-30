@@ -40,7 +40,7 @@ function AnswerPosts({ answers }: { answers: AnswerList[] }) {
     <>
       {answers.map((answer) => (
         <PostBox
-          path="answers"
+          path="answer"
           type="notice"
           key={answer.id}
           slug={answer.id}
