@@ -18,6 +18,10 @@
   gap: 8px;
 }
 
+.opinion {
+  gap: 38px;
+}
+
 .title {
   font-size: var(--text-title-2-size);
   font-weight: var(--text-title-2-weight);

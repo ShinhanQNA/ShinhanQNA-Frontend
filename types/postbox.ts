@@ -8,6 +8,5 @@ export interface PostBoxProps {
   likes?: number;
   flags?: number;
   bans?: number;
-  opinions?: number;
-  status?: "waiting" | "completed";
+  status?: "완료" | "응답 대기";
 }
