@@ -22,7 +22,7 @@ export default async function GetNoticeList(): Promise<
   if (!res.ok) throw new Error("fetch_failed");
 
   const data = await res.json();
-  if (!data) throw new Error("notices_not_found");
+  if (!data) return [];
 
   return data;
 }

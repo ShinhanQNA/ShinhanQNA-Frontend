@@ -22,7 +22,7 @@ export default async function GetAnswerList(): Promise<
   if (!res.ok) throw new Error("fetch_failed");
 
   const data = await res.json();
-  if (!data) throw new Error("answers_not_found");
+  if (!data) return [];
 
   return data;
 }
