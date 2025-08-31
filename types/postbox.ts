@@ -1,4 +1,4 @@
-export interface PostBoxProps {
+export default interface PostBoxProps {
   type: "post" | "selected" | "notice" | "signup";
   isAdmin?: boolean;
   path?: string | string[];

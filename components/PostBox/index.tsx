@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PostBoxProps } from "@/types/postbox";
+import PostBoxProps from "@/types/postbox";
 import Icon from "@/components/Icon";
 import Select from "@/components/Select";
 import Statetag from "@/components/StateTag";

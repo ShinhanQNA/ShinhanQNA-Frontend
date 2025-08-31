@@ -1,7 +1,7 @@
 "use client";
 
 import { useId } from "react";
-import type { TextFieldProps } from "@/types/textfield";
+import TextFieldProps from "@/types/textfield";
 import styles from "./textfield.module.css";
 
 export default function TextField({

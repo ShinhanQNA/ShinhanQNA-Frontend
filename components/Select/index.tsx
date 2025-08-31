@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import type { SelectProps, SelectOption } from "@/types/select";
+import SelectProps from "@/types/select";
+import SelectOption from "@/types/selectoption";
 import styles from "./select.module.css";
 import Icon from "@/components/Icon";
 

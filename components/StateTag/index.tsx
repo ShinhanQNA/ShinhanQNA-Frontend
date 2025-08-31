@@ -1,4 +1,4 @@
-import type { StateTagProps } from "@/types/statetag";
+import StateTagProps from "@/types/statetag";
 import styles from "./statetag.module.css";
 
 export default function StateTag({

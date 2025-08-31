@@ -1,4 +1,4 @@
-import { TabProps } from "@/types/tab";
+import TabProps from "@/types/tab";
 import styles from "./tab.module.css";
 
 export default function Tab({
