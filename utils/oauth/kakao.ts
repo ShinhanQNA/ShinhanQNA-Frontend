@@ -1,7 +1,11 @@
 import GenState from "./state";
 import type { KakaoAuthorizeParams } from "@/types/kakao";
 
-export async function WaitForKakaoReady(timeoutMs = 5000): Promise<void> {
+export async function WaitForKakaoReady(
+  timeoutMs = 5000
+): Promise<
+  void
+> {
   const start = Date.now();
 
   // 스크립트가 window에 올라올 때까지 대기
@@ -21,7 +25,9 @@ export async function WaitForKakaoReady(timeoutMs = 5000): Promise<void> {
   }
 }
 
-export async function KakaoAuthorize(params: KakaoAuthorizeParams) {
+export async function KakaoAuthorize(
+  params: KakaoAuthorizeParams
+) {
   await WaitForKakaoReady();
   const K = window.Kakao!;
   // state 미지정 시 자동 생성하여 sessionStorage에 보관

@@ -4,7 +4,12 @@ import DeleteCookie from "../cookie/delete";
 import SetJWTToken from "./set";
 import JWTToken from "@/types/token";
 
-export default async function SaveJWTToken(origin: string, tokens: JWTToken): Promise<NextResponse> {
+export default async function SaveJWTToken(
+  origin: string,
+  tokens: JWTToken
+): Promise<
+  NextResponse
+> {
   const fallback = "/";
   const redirectCookie = await GetCookie("redirect_after_login");
   const targetPath = redirectCookie && redirectCookie.startsWith("/") ? redirectCookie : fallback;

@@ -2,7 +2,11 @@
 
 import { cookies } from "next/headers";
 
-export default async function SetCookie(key: string, value: string, maxAge: number) {
+export default async function SetCookie(
+  key: string,
+  value: string,
+  maxAge: number
+) {
   const cookieStore = await cookies();
   cookieStore.set({
     name: key,

@@ -1,6 +1,12 @@
+"use server";
+
+import GetCookie from "../cookie/get";
 import Me from "@/types/me";
 
-export default async function GetMe(accessToken: string): Promise<Me> {
+export default async function GetMe(): Promise<
+  Me
+> {
+  const accessToken = (await GetCookie("access_token")) || "";
   if (!accessToken) {
     throw new Error("unauthorized");
   }

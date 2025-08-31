@@ -1,12 +1,16 @@
+"use server";
+
+import GetCookie from "../cookie/get";
 import PostList from "@/types/postlist";
 
-export default async function GetPostList(accessToken: string): Promise<PostList[]> {
-  if (!accessToken) {
-    throw new Error("unauthorized");
-  }
-
+export default async function GetPostList(): Promise<
+  PostList[]
+> {
   const backendUrl = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/boards`;
   if (!process.env.NEXT_PUBLIC_BACKEND_BASE_URL) throw new Error("server_misconfigured");
+
+  const accessToken = await GetCookie("access_token")
+  if (!accessToken) throw new Error("unauthorized");
 
   const res = await fetch(backendUrl, {
     method: "GET",
@@ -15,11 +19,10 @@ export default async function GetPostList(accessToken: string): Promise<PostList
       "Content-Type": "application/json"
     }
   });
+  if (!res.ok) throw new Error("fetch_failed");
 
-  if (!res.ok) {
-    throw new Error("fetch_failed");
-  }
+  const data = await res.json();
+  if (!data) throw new Error("posts_not_found");
 
-  const data: PostList[] = await res.json();
   return data;
 }

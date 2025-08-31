@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import DeleteCookie from "../cookie/delete";
 
-export default function HandleError(error: any, requestUrl: string): NextResponse {
+export default function HandleError(
+  error: any,
+  requestUrl: string
+): NextResponse {
   const url = new URL(requestUrl);
   const raw = error instanceof Error ? error.message : String(error);
 

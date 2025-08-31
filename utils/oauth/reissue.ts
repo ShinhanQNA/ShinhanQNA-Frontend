@@ -1,4 +1,8 @@
-export default async function Reissue(refreshToken: string) {
+"use server";
+
+export default async function Reissue(
+  refreshToken: string
+) {
   const backendUrl = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/token/reissue`;
   if (!process.env.NEXT_PUBLIC_BACKEND_BASE_URL) throw new Error("server_misconfigured");
 
@@ -9,15 +13,10 @@ export default async function Reissue(refreshToken: string) {
     cache: "no-store"
   });
 
-  if (!res.ok) {
-    return null;
-  }
-  
-  try {
-    const data = await res.json();
-    if (!data?.access_token || !data?.refresh_token) return null;
-    return data;
-  } catch {
-    return null;
-  }
+  if (!res.ok) throw new Error("reissue_failed");
+
+  const data = await res.json();
+  if (!data.access_token || !data.refresh_token) throw new Error("token_not_found");
+
+  return data;
 }

@@ -1,12 +1,18 @@
+"use server";
+
+import GetCookie from "../cookie/get";
 import Like from "@/types/like";
 
-export default async function DoLike(accessToken: string, postId: string): Promise<Like> {
-  if (!accessToken) {
-    throw new Error("unauthorized");
-  }
-
+export default async function DoLike(
+  postId: string
+): Promise<
+  Like
+> {
   const backendLikeUrl = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/boards/${postId}/like`;
   if (!process.env.NEXT_PUBLIC_BACKEND_BASE_URL) throw new Error("server_misconfigured");
+
+  const accessToken = await GetCookie("access_token")
+  if (!accessToken) throw new Error("unauthorized");
 
   const res = await fetch(backendLikeUrl, {
     method: "POST",
@@ -26,19 +32,18 @@ export default async function DoLike(accessToken: string, postId: string): Promi
         "Content-Type": "application/json"
       }
     });
+    if (!res.ok) throw new Error("unlike_failed");
 
-    if (!res.ok) {
-      throw new Error("unlike_failed");
-    }
+    const data = await res.json();
+    if (!data) throw new Error("unlike_failed");
 
-    const data: Like = await res.json();
     return data;
   }
 
-  if (!res.ok) {
-    throw new Error("like_failed");
-  }
+  if (!res.ok) throw new Error("like_failed");
 
-  const data: Like = await res.json();
+  const data = await res.json();
+  if (!data) throw new Error("like_failed");
+
   return data;
 }
