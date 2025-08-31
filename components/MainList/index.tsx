@@ -11,7 +11,14 @@ function GeneralPosts({ posts }: { posts: PostList[] }) {
   return (
     <>
       {posts.map((post) => (
-        <PostBox type="post" key={post.postId} slug={post.postId} title={post.title} content={post.content} />
+        <PostBox
+          type="post"
+          key={post.postId}
+          slug={post.postId}
+          title={post.title}
+          content={post.content}
+          likes={post.likes}
+        />
       ))}
     </>
   );
