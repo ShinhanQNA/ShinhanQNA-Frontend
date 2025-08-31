@@ -7,7 +7,7 @@ interface User {
   department: string | null;
   studentCardImagePath: string | null;
   students: string | null;
-  status: "가입 대기 중" | "가입 완료" | null;
+  status: "가입 대기 중" | "가입 완료";
   studentCertified: boolean;
 }
 
@@ -16,7 +16,7 @@ interface Warning {
   email: string;
   reason: string;
   warningDate: string;
-  status: "경고" | "차단"; // 필요한 상태 추가
+  status: "경고" | "차단";
 }
 
 export default interface Me {
