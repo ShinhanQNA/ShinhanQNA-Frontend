@@ -1,8 +1,8 @@
 import SetCookie from "../cookie/set";
-import JWTToken from "@/types/token";
+import JWT from "@/types/token";
 
-export default function SetJWTToken(
-  tokens: JWTToken
+export default function SetJWT(
+  tokens: JWT
 ) {
   SetCookie("access_token", tokens.access_token, tokens.expires_in);
   SetCookie("refresh_token", tokens.refresh_token, 7 * 24 * 60 * 60);

@@ -1,13 +1,13 @@
 "use server";
 
-import JWTToken from "@/types/token";
+import JWT from "@/types/token";
 import JWTExchange from "@/types/exchange";
 
-export default async function GetJWTToken({
+export default async function GetJWT({
   variant,
   token
 }: JWTExchange): Promise<
-  JWTToken
+  JWT
 > {
   const backendUrl = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/oauth/callback/${variant}`;
   if (!process.env.NEXT_PUBLIC_BACKEND_BASE_URL) throw new Error("server_misconfigured");
