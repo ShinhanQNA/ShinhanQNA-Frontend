@@ -18,6 +18,7 @@ export const config = {
 };
 
 function isPublicPath(pathname: string) {
+  if (pathname === "/") return true; // 루트 경로는 공개
   // 슬래시로 끝나는 항목은 prefix 매칭, 아닐 경우 exact 또는 하위 경로 매칭
   return PUBLIC_PATHS.some((p) => {
     if (p.endsWith("/")) return pathname.startsWith(p);
