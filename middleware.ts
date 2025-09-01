@@ -1,151 +1,77 @@
 import { NextResponse, NextRequest } from "next/server";
-import JWTToken from "@/types/token";
+import GetMe from "./utils/user/get";
 
-// 퍼블릭 접근 허용 경로 (비로그인 허용)
+// 여기에 명시된 경로는 인증 없이 접근 허용
 const PUBLIC_PATHS = [
   "/login", // 로그인 페이지
-  "/license",
-  "/privacy",
-  "/terms",
-  "/api", // api 호출 허용
+  "/license", // 약관/라이선스
+  "/privacy", // 개인정보 처리방침
+  "/terms", // 서비스 이용약관
+  "/oauth", // OAuth 콜백
 ];
 
-// 시계 차이(grace) (ms)
-const GRACE_MS = 2000;
+// 정적 리소스와 Next 내부 경로는 제외하고 나머지 경로에 미들웨어 적용
+export const config = {
+  matcher: [
+    "/((?!_next/|favicon.ico|robots.txt|sitemap.xml|campus_main\\.).*)",
+  ],
+};
 
-// 공통 쿠키 설정 기본값
-const SECURE = process.env.NODE_ENV === "production";
-
-// 퍼블릭 경로 여부
-function IsPublicPath(pathname: string) {
-  if (pathname === "/") return true; // 홈만 공개
-  if (pathname.startsWith("/_next/")) return true; // Next 정적 빌드 산출물
-  if (pathname === "/favicon.ico") return true;
-  // public 폴더 내 정적 파일 (확장자 포함 경로) 전부 허용
-  if (/\.[a-zA-Z0-9]+$/.test(pathname)) return true;
-  // prefix 매칭 ("/api/oauth" 같은)
+function isPublicPath(pathname: string) {
+  // 슬래시로 끝나는 항목은 prefix 매칭, 아닐 경우 exact 또는 하위 경로 매칭
   return PUBLIC_PATHS.some((p) => {
     if (p.endsWith("/")) return pathname.startsWith(p);
     return pathname === p || pathname.startsWith(p + "/");
   });
 }
 
-// access_exp 쿠키 기반 만료 판단 (없으면 만료로 간주)
-function IsAccessExpired(expMsCookie?: string | undefined) {
-  if (!expMsCookie) return true;
-  const expMs = Number(expMsCookie);
-  if (Number.isNaN(expMs)) return true;
-  return expMs - Date.now() <= GRACE_MS;
+function isHtmlNavigation(req: NextRequest) {
+  // 브라우저 탐색(문서 요청)인지 식별: Accept 헤더에 text/html 포함 여부로 판단
+  const accept = req.headers.get("accept") || "";
+  return accept.includes("text/html");
 }
 
-// 내부 API 호출: 리프레시로 무음 재발급
-async function SilentlyReissue(origin: string, refreshToken: string): Promise<JWTToken | null> {
+export default async function middleware(req: NextRequest) {
+  const { pathname, search, protocol } = req.nextUrl;
+
+  // 공개 경로는 통과
+  if (isPublicPath(pathname)) return NextResponse.next();
+
+  // 액세스 토큰 요구 (쿠키: access_token)
+  const access = req.cookies.get("access_token")?.value;
+  if (!access) {
+    // 브라우저 탐색이면 로그인으로 리다이렉트 + "redirect_after_login" 쿠키 설정
+    if (isHtmlNavigation(req)) {
+      const res = NextResponse.redirect(new URL("/login", req.url));
+      res.cookies.set("redirect_after_login", pathname + search, {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: protocol === "https:", // HTTPS일 때만 Secure 쿠키
+        path: "/",
+      });
+      return res;
+    }
+    // 데이터/API 요청이면 401 반환
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  }
+
+  // JWT 서명/만료 검증
   try {
-    const res = await fetch(`${origin}/api/oauth/reissue`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "refreshToken": refreshToken,
-      },
-      cache: "no-store",
-    });
-    if (!res.ok) return null;
-    return (await res.json()) as JWTToken;
+    await GetMe();
+    // 검증 성공 → 통과
+    return NextResponse.next();
   } catch {
-    return null;
-  }
-}
-
-// 공통 토큰 쿠키 설정
-function SetJWTToken(res: NextResponse, tokens: JWTToken) {
-  res.cookies.set("access_token", tokens.access_token, {
-    httpOnly: true,
-    secure: SECURE,
-    sameSite: "lax",
-    path: "/",
-    maxAge: tokens.expires_in,
-  });
-
-  res.cookies.set("refresh_token", tokens.refresh_token, {
-    httpOnly: true,
-    secure: SECURE,
-    sameSite: "lax",
-    path: "/",
-    maxAge: 7 * 24 * 60 * 60, // 1주
-  });
-
-  // access_exp: 만료 시각 (epoch ms) - 디코딩 없이 만료 판단용. HttpOnly 아님 (민감정보 아님)
-  const nowSec = Math.floor(Date.now() / 1000);
-  const expMs = (nowSec + tokens.expires_in) * 1000;
-  res.cookies.set("access_exp", String(expMs), {
-    httpOnly: false, // 클라/미들웨어에서 읽기 가능하도록
-    secure: SECURE,
-    sameSite: "lax",
-    path: "/",
-    maxAge: tokens.expires_in,
-  });
-
-  return res;
-}
-
-function RedirectToLogin(req: NextRequest) {
-  const loginUrl = new URL("/login", req.nextUrl.origin);
-  const targetPath = req.nextUrl.pathname + (req.nextUrl.search || "");
-  const res = NextResponse.redirect(loginUrl, 302);
-
-  // 기존 쿼리 파라미터(return) 대신 쿠키 방식 사용
-  if (targetPath && targetPath !== "/login" && targetPath.startsWith("/")) {
-    // 로그인 후 리다이렉트할 경로를 쿠키에 저장 (오픈 리다이렉트 방지)
-    res.cookies.set("redirect_after_login", targetPath, {
-      httpOnly: true,
-      secure: SECURE,
-      sameSite: "lax",
-      path: "/",
-    });
-  }
-  return res;
-}
-
-export async function middleware(req: NextRequest) {
-  const { nextUrl } = req;
-  const pathname = nextUrl.pathname;
-
-  // 매 요청 기본 응답
-  const baseRes = NextResponse.next();
-
-  const accessToken = req.cookies.get("access_token")?.value;
-  const refreshToken = req.cookies.get("refresh_token")?.value;
-  const accessExp = req.cookies.get("access_exp")?.value;
-  const expired = IsAccessExpired(accessExp);
-
-  // 퍼블릭 경로: 토큰이 없거나 만료이면 조용히 재발급 시도 (성공 시 쿠키만 세팅 후 그대로 통과)
-  if (IsPublicPath(pathname)) {
-    if (!accessToken || expired) {
-      if (refreshToken) {
-        const issued = await SilentlyReissue(req.nextUrl.origin, refreshToken);
-        if (issued) {
-          return SetJWTToken(baseRes, issued);
-        }
-      }
+    // 검증 실패(만료/서명 오류 등)
+    if (isHtmlNavigation(req)) {
+      const res = NextResponse.redirect(new URL("/login", req.url));
+      res.cookies.set("redirect_after_login", pathname + search, {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: protocol === "https:",
+        path: "/",
+      });
+      return res;
     }
-    return baseRes;
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
-
-  // 보호 경로: 토큰 없거나 만료면 재발급; 실패 시 로그인으로
-  if (!accessToken || expired) {
-    if (refreshToken) {
-      const issued = await SilentlyReissue(req.nextUrl.origin, refreshToken);
-      if (issued) {
-        return SetJWTToken(baseRes, issued);
-      }
-    }
-    return RedirectToLogin(req);
-  }
-
-  // 유효 토큰 통과
-  return baseRes;
 }
-
-export const config = {
-  matcher: ["/:path*"],
-};
