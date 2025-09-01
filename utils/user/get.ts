@@ -19,11 +19,7 @@ export default async function GetMe(): Promise<
       "Content-Type": "application/json"
     }
   });
+  if (!res.ok) throw new Error("failed_to_fetch_user");
 
-  if (!res.ok) {
-    throw new Error("fetch_failed");
-  }
-
-  const data = await res.json();
-  return data;
+  return res.json();
 }
