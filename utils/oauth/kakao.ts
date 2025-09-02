@@ -30,8 +30,8 @@ export async function KakaoAuthorize(
 ) {
   await WaitForKakaoReady();
   const K = window.Kakao!;
-  // state 미지정 시 자동 생성하여 sessionStorage에 보관
-  const state = params.state ?? GenState();
+  const statePayload = { state: GenState(), next: params.nonce ?? "/" };
+  const state = btoa(encodeURIComponent(JSON.stringify(statePayload)));
 
   K.Auth.authorize({
     redirectUri: params.redirectUri,
@@ -39,10 +39,13 @@ export async function KakaoAuthorize(
   });
 }
 
-export default async function KakaoLogin() {
+export default async function KakaoLogin(
+  nextUrl?: string
+) {
   try {
     await KakaoAuthorize({
-      redirectUri: process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI!
+      redirectUri: process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI!,
+      nonce: nextUrl
     });
   } catch (error) {
     console.error("Kakao login failed:", error);

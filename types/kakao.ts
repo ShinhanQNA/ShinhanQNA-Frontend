@@ -3,6 +3,7 @@ export interface KakaoAuthorizeParams {
   state?: string;
   scope?: string | string[];
   prompt?: string;
+  nonce?: string;
   throughTalk?: boolean;
 }
 
