@@ -12,8 +12,8 @@ export default async function GetThreeWeekList(
   const backendUrl = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/three-week-opinions/group/${groupId}?sort=${sort}`;
   if (!process.env.NEXT_PUBLIC_BACKEND_BASE_URL) throw new Error("server_misconfigured");
 
-  const accessToken = await GetCookie("access_token")
-  if (!accessToken) throw new Error("unauthorized")
+  const accessToken = await GetCookie("access_token");
+  if (!accessToken) throw new Error("unauthorized");
 
   const res = await fetch(backendUrl, {
     method: "GET",
@@ -22,10 +22,5 @@ export default async function GetThreeWeekList(
       "Content-Type": "application/json"
     }
   });
-  if (!res.ok) throw new Error("fetch_failed");
-
-  const data = await res.json();
-  if (!data) throw new Error("list_not_found");
-
-  return data;
+  return res.json();
 }

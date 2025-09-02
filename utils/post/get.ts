@@ -21,10 +21,5 @@ export default async function GetPost(
       "Content-Type": "application/json"
     }
   });
-  if (!res.ok) throw new Error("fetch_failed");
-
-  const data = await res.json();
-  if (!data) throw new Error("post_not_found");
-
-  return data;
+  return res.json();
 }

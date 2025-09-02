@@ -9,7 +9,7 @@ export default async function GetPostList(): Promise<
   const backendUrl = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/boards`;
   if (!process.env.NEXT_PUBLIC_BACKEND_BASE_URL) throw new Error("server_misconfigured");
 
-  const accessToken = await GetCookie("access_token")
+  const accessToken = await GetCookie("access_token");
   if (!accessToken) throw new Error("unauthorized");
 
   const res = await fetch(backendUrl, {
@@ -19,10 +19,5 @@ export default async function GetPostList(): Promise<
       "Content-Type": "application/json"
     }
   });
-  if (!res.ok) throw new Error("fetch_failed");
-
-  const data = await res.json();
-  if (!data) return [];
-
-  return data;
+  return res.json();
 }

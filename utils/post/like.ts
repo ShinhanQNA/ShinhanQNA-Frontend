@@ -32,18 +32,8 @@ export default async function DoLike(
         "Content-Type": "application/json"
       }
     });
-    if (!res.ok) throw new Error("unlike_failed");
-
-    const data = await res.json();
-    if (!data) throw new Error("unlike_failed");
-
-    return data;
+    return res.json();
   }
 
-  if (!res.ok) throw new Error("like_failed");
-
-  const data = await res.json();
-  if (!data) throw new Error("like_failed");
-
-  return data;
+  return res.json();
 }

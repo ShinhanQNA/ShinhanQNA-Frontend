@@ -19,10 +19,5 @@ export default async function GetJWT({
       "Content-Type": "application/json",
     },
   });
-  if (!res.ok) throw new Error("login_failed");
-
-  const data = await res.json();
-  if (!data.access_token || !data.refresh_token) throw new Error("token_not_found");
-
-  return data;
+  return res.json();
 }

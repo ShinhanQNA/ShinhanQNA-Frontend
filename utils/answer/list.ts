@@ -9,8 +9,8 @@ export default async function GetAnswerList(): Promise<
   const backendUrl = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/answers`;
   if (!process.env.NEXT_PUBLIC_BACKEND_BASE_URL) throw new Error("server_misconfigured");
 
-  const accessToken = await GetCookie("access_token")
-  if (!accessToken) throw new Error("unauthorized")
+  const accessToken = await GetCookie("access_token");
+  if (!accessToken) throw new Error("unauthorized");
 
   const res = await fetch(backendUrl, {
     method: "GET",
@@ -19,10 +19,5 @@ export default async function GetAnswerList(): Promise<
       "Content-Type": "application/json"
     }
   });
-  if (!res.ok) throw new Error("fetch_failed");
-
-  const data = await res.json();
-  if (!data) return [];
-
-  return data;
+  return res.json();
 }
