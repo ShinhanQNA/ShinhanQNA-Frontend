@@ -1,37 +1,37 @@
+import { notFound } from "next/navigation";
 import Header from "@/components/Header";
 import PostBox from "@/components/PostBox";
 import Footer from "@/components/Footer";
+import GetThreeWeekList from "@/utils/3week/list";
 import styles from "./page.module.css";
 
-export default function MyPosts() {
-  const posts = [
-    {
-      id: 1,
-      title: "첫 번째 게시글",
-      content: "이것은 첫 번째 게시글의 내용입니다.",
-    },
-    {
-      id: 2,
-      title: "두 번째 게시글",
-      content: "이것은 두 번째 게시글의 내용입니다.",
-    },
-    {
-      id: 3,
-      title: "세 번째 게시글",
-      content: "이것은 세 번째 게시글의 내용입니다.",
-    },
-  ];
+export default async function Selected({
+  params
+}: { params: Promise<{
+  slug: string
+}> }) {
+  const { slug } = await params;
+  if (!slug) return notFound();
+
+  const data = await GetThreeWeekList(slug, "date");
+  const year = data.selectedYear;
+  const month = data.selectedMonth;
+
+  const posts = data.opinions;
 
   return (
     <main className={styles.page}>
       <Header />
       <div className={styles.main}>
         <div className={styles.content}>
-          <h1 className={styles.title}>내 게시물</h1>
+          <h1 className={styles.title}>
+            {year}년 {month}월
+          </h1>
           {posts.map((post) => (
             <PostBox
               type="post"
               key={post.id}
+              path={slug}
               slug={post.id}
               title={post.title}
               content={post.content}

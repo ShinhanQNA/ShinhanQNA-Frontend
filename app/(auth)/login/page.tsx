@@ -1,11 +1,15 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import Logo from "@/components/Logo";
 import Button from "@/components/Button";
 import KakaoLogin from "@/utils/oauth/kakao";
 import styles from "./page.module.css";
 
 export default function Login() {
+  const searchParams = useSearchParams();
+  const next = searchParams.get("next");
+
   return (
     <main className={styles.page}>
       <div className={styles.aside}>
@@ -29,7 +33,8 @@ export default function Login() {
           </Button>
           <Button
             variant="linear"
-            className={`${styles.button} ${styles.google}`}>
+            className={`${styles.button} ${styles.google}`}
+          >
             <svg xmlns="http://www.w3.org/2000/svg" width="21" height="20" viewBox="0 0 21 20" fill="none">
               <path d="M18.667 10.1894C18.667 9.59853 18.614 9.03036 18.5155 8.48486H10.667V11.7084H15.1518C14.9587 12.75 14.3716 13.6326 13.489 14.2235V16.3144H16.1822C17.7579 14.8637 18.667 12.7273 18.667 10.1894Z" fill="#4285F4"/>
               <path d="M10.6667 18.3334C12.9167 18.3334 14.8031 17.5871 16.1818 16.3145L13.4886 14.2235C12.7425 14.7235 11.7879 15.019 10.6667 15.019C8.49623 15.019 6.65914 13.553 6.00381 11.5834H3.21973V13.7425C4.59098 16.466 7.40914 18.3334 10.6667 18.3334Z" fill="#34A853"/>
@@ -39,7 +44,7 @@ export default function Login() {
             <span>Google 계정으로 로그인</span>
           </Button>
           <Button
-            onClick={KakaoLogin}
+            onClick={() => KakaoLogin(next!)}
             className={`${styles.button} ${styles.kakao}`}
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="21" height="20" viewBox="0 0 21 20" fill="none">

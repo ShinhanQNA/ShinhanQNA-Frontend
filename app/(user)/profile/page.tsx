@@ -12,7 +12,9 @@ export default function Profile() {
       <Header />
       <div className={styles.main}>
         <div className={styles.content}>
-          <h1 className={styles.title}>프로필 페이지</h1>
+          <h1 className={styles.title}>
+            프로필 페이지
+          </h1>
           <div className={styles.profile}>
             <div className={styles.actions}>
               <Link href="/my-posts">
