@@ -7,8 +7,8 @@ export default async function DoReissue(
 ): Promise<
   JWT
 > {
-  const backendUrl = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/token/reissue`;
-  if (!process.env.NEXT_PUBLIC_BACKEND_BASE_URL) throw new Error("server_misconfigured");
+  const backendUrl = `${process.env.BACKEND_BASE_URL}/token/reissue`;
+  if (!process.env.BACKEND_BASE_URL) throw new Error("server_misconfigured");
 
   const res = await fetch(backendUrl, {
     method: "POST",

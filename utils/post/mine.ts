@@ -6,8 +6,8 @@ import PostList from "@/types/postlist";
 export default async function GetMyPostList(): Promise<
   PostList[]
 > {
-  const backendUrl = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/boards/my`;
-  if (!process.env.NEXT_PUBLIC_BACKEND_BASE_URL) throw new Error("server_misconfigured");
+  const backendUrl = `${process.env.BACKEND_BASE_URL}/boards/my`;
+  if (!process.env.BACKEND_BASE_URL) throw new Error("server_misconfigured");
 
   const accessToken = await GetCookie("access_token");
   if (!accessToken) throw new Error("unauthorized");

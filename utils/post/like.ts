@@ -8,8 +8,8 @@ export default async function DoLike(
 ): Promise<
   Like
 > {
-  const backendLikeUrl = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/boards/${postId}/like`;
-  if (!process.env.NEXT_PUBLIC_BACKEND_BASE_URL) throw new Error("server_misconfigured");
+  const backendLikeUrl = `${process.env.BACKEND_BASE_URL}/boards/${postId}/like`;
+  if (!process.env.BACKEND_BASE_URL) throw new Error("server_misconfigured");
 
   const accessToken = await GetCookie("access_token")
   if (!accessToken) throw new Error("unauthorized");
@@ -23,7 +23,7 @@ export default async function DoLike(
   });
 
   if (res.status === 400) {
-    const backendUnlikeUrl = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/boards/${postId}/unlike`;
+    const backendUnlikeUrl = `${process.env.BACKEND_BASE_URL}/boards/${postId}/unlike`;
 
     const res = await fetch(backendUnlikeUrl, {
       method: "POST",
