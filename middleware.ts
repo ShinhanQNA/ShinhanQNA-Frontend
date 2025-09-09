@@ -1,6 +1,4 @@
 import { NextResponse, NextRequest } from "next/server";
-import DoReissue from "./utils/oauth/reissue";
-import GetMe from "./utils/user/get";
 import JWT from "./types/token";
 import Me from "./types/me";
 
@@ -12,6 +10,9 @@ const PUBLIC_PATHS = [
   "/terms", // 서비스 이용약관
   "/oauth", // OAuth 콜백
 ];
+
+// 시계 오차 허용
+const GRACE_MS = 2000;
 
 // 정적 리소스와 Next 내부 경로는 제외하고 나머지 경로에 미들웨어 적용
 export const config = {
@@ -144,59 +145,81 @@ function SaveInfo(
 }
 
 export default async function middleware(req: NextRequest) {
-  const { pathname, protocol } = req.nextUrl;
+  const { origin, pathname, protocol } = req.nextUrl;
 
   // JWT 확인
   const accessToken = GetCookie(req, "access_token");
   const refreshToken = GetCookie(req, "refresh_token");
+  const accessExp = GetCookie(req, "access_exp");
 
-  if (!accessToken) {
-    if (!refreshToken) {
-      // 공개 경로는 JWT 없어도 통과
-      if (IsPublicPath(pathname)) return NextResponse.next();
+  // JWT 없을 때
+  if (!accessToken && !refreshToken) {
+    // 로그인 필요 없는 페이지는 JWT 없어도 통과
+    if (IsPublicPath(pathname)) return NextResponse.next();
 
-      // JWT가 아예 없고 브라우저 탐색이면 로그인으로 리다이렉트
-      if (IsHtmlNavigation(req)) return NextResponse.redirect(new URL(`/login?next=${encodeURIComponent(pathname)}`, req.url));
-    }
-
-    try {
-      // 리프레시 토큰으로 JWT 재발급 시도
-      const jwt = await DoReissue(refreshToken!);
-
-      // JWT 재발급 성공 시 JWT 저장
-      const res = NextResponse.next();
-      SaveJWT(res, protocol, jwt);
-      return res;
-    } catch {
-      // 리프레시 토큰 재발급 실패 시 모든 쿠키 삭제
-      const cookie = req.cookies.getAll();
-      for (const c of cookie) DeleteCookie(NextResponse.next(), c.name);
-
-      // 로그인 페이지로 리다이렉트
-      if (IsHtmlNavigation(req)) return NextResponse.redirect(new URL(`/login?next=${encodeURIComponent(pathname)}`, req.url));
-    }
-
-    // 데이터/API 요청이면 401 반환
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    // 로그인 필요한 페이지는 로그인으로 리다이렉트
+    if (IsHtmlNavigation(req)) return NextResponse.redirect(new URL(`/login?next=${encodeURIComponent(pathname)}`, req.url));
   }
 
-  // JWT 서명/만료 검증
-  try {
-    const info = await GetMe();
+  // 엑세스 토큰이 있다면 만료 상태 확인
+  if (accessToken && accessExp) {
+    const expTime = parseInt(accessExp);
+    const now = Date.now();
 
-    // 검증 성공시 저장
-    const res = NextResponse.next();
-    SaveInfo(res, protocol, info);
-    return res;
-  } catch {
-    // 로그인 페이지로 리다이렉트
+    // JWT 만료 안됐다면 JWT 검증 시작
+    if (expTime > now + GRACE_MS) {
+      const infoRes = await fetch(`${origin}/oauth/me`, {
+        headers: { "Authorization": accessToken! },
+        cache: "no-store"
+      });
+
+      // JWT 검증 성공하면 통과
+      if (infoRes.status === 200) {
+        const info = await infoRes.json();
+
+        const res = NextResponse.next();
+        SaveInfo(res, protocol, info);
+        return res;
+      }
+
+      // JWT 검증 실패하면 모든 쿠키 삭제하고 로그인으로 리다이렉트
+      if (IsHtmlNavigation(req)) {
+        const res = NextResponse.redirect(new URL(`/login?next=${encodeURIComponent(pathname)}`, req.url));
+        const cookie = req.cookies.getAll();
+        for (const c of cookie) DeleteCookie(res, c.name);
+        return res;
+      }
+
+      // 브라우저 접근이 아니면 json으로 응답
+      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    }
+  }
+
+  // JWT 만료되면 재발급 시작
+  if (refreshToken) {
+    const reissueRes = await fetch(`${origin}/oauth/reissue`, {
+      headers: { "Authorization": refreshToken! },
+      cache: "no-store"
+    });
+
+    // JWT 재발급 성공하면 통과
+    if (reissueRes.status === 200) {
+      const jwt = await reissueRes.json();
+
+      const res = NextResponse.next()
+      SaveJWT(res, protocol, jwt);
+      return res;
+    }
+
+    // JWT 재발급 실패하면 모든 쿠키 삭제하고 로그인으로 리다이렉트
     if (IsHtmlNavigation(req)) {
-      // 토큰 검증 실패 시 모든 쿠키 삭제
       const res = NextResponse.redirect(new URL(`/login?next=${encodeURIComponent(pathname)}`, req.url));
       const cookie = req.cookies.getAll();
       for (const c of cookie) DeleteCookie(res, c.name);
       return res;
     }
+
+    // 브라우저 접근이 아니면 json으로 응답
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 }
