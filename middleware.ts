@@ -73,6 +73,20 @@ function DeleteCookie(
   res.cookies.delete(key);
 }
 
+// 모든 쿠키를 일괄 삭제 (예외 지정 가능)
+function ClearAllCookies(
+  res: NextResponse,
+  req: NextRequest,
+  except: string[] = []
+) {
+  const all = req.cookies.getAll();
+  for (const c of all) {
+    if (!except.includes(c.name)) {
+      res.cookies.delete(c.name);
+    }
+  }
+}
+
 // 미들웨어 JWT 쿠키 저장 함수
 function SaveJWT(
   res: NextResponse,
@@ -154,11 +168,26 @@ export default async function middleware(req: NextRequest) {
 
   // JWT 없을 때
   if (!accessToken && !refreshToken) {
-    // 로그인 필요 없는 페이지는 JWT 없어도 통과
-    if (IsPublicPath(pathname)) return NextResponse.next();
+    const hasCookies = req.cookies.getAll().length > 0;
 
-    // 로그인 필요한 페이지는 로그인으로 리다이렉트
-    if (IsHtmlNavigation(req)) return NextResponse.redirect(new URL(`/login?next=${encodeURIComponent(pathname)}`, req.url));
+    // 로그인 필요 없는 페이지는 JWT 없어도 통과하되, 잔여 쿠키는 정리
+    if (IsPublicPath(pathname)) {
+      const res = NextResponse.next();
+      if (hasCookies) ClearAllCookies(res, req);
+      return res;
+    }
+
+    // 로그인 필요한 페이지는 로그인으로 리다이렉트 (HTML)
+    if (IsHtmlNavigation(req)) {
+      const res = NextResponse.redirect(new URL(`/login?next=${encodeURIComponent(pathname)}`, req.url));
+      if (hasCookies) ClearAllCookies(res, req);
+      return res;
+    }
+
+    // HTML 요청이 아니라면 401 JSON으로 응답
+    const res = NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    if (hasCookies) ClearAllCookies(res, req);
+    return res;
   }
 
   // 엑세스 토큰이 있다면 만료 상태 확인
@@ -185,13 +214,14 @@ export default async function middleware(req: NextRequest) {
       // JWT 검증 실패하면 모든 쿠키 삭제하고 로그인으로 리다이렉트
       if (IsHtmlNavigation(req)) {
         const res = NextResponse.redirect(new URL(`/login?next=${encodeURIComponent(pathname)}`, req.url));
-        const cookie = req.cookies.getAll();
-        for (const c of cookie) DeleteCookie(res, c.name);
+        ClearAllCookies(res, req);
         return res;
       }
 
       // 브라우저 접근이 아니면 json으로 응답
-      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+      const res = NextResponse.json({ error: "unauthorized" }, { status: 401 });
+      ClearAllCookies(res, req);
+      return res;
     }
   }
 
@@ -214,12 +244,13 @@ export default async function middleware(req: NextRequest) {
     // JWT 재발급 실패하면 모든 쿠키 삭제하고 로그인으로 리다이렉트
     if (IsHtmlNavigation(req)) {
       const res = NextResponse.redirect(new URL(`/login?next=${encodeURIComponent(pathname)}`, req.url));
-      const cookie = req.cookies.getAll();
-      for (const c of cookie) DeleteCookie(res, c.name);
+      ClearAllCookies(res, req);
       return res;
     }
 
     // 브라우저 접근이 아니면 json으로 응답
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    const res = NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    ClearAllCookies(res, req);
+    return res;
   }
 }
