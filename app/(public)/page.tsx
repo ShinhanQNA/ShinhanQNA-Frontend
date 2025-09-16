@@ -1,26 +1,41 @@
+import Link from "next/link";
 import Header from "@/components/Header";
-import MainList from "@/components/MainList";
 import Footer from "@/components/Footer";
+import MainList from "@/components/MainList";
+import Button from "@/components/Button";
+import GetCookie from "@/utils/cookie/get";
 import GetPostList from "@/utils/post/list";
 import GetThreeWeekGroup from "@/utils/3week/group";
 import GetAnswerList from "@/utils/answer/list";
 import styles from "./page.module.css";
 
 export default async function Home() {
-  const posts = await GetPostList();
-  const group = await GetThreeWeekGroup();
-  const answers = await GetAnswerList();
+  const accessToken = await GetCookie("access_token");
 
   return (
     <main className={styles.page}>
       <Header />
       <div className={styles.main}>
         <div className={styles.content}>
-          <MainList
-            posts={posts}
-            group={group}
-            answers={answers}
-          />
+          {accessToken ?
+            <MainList
+              posts={await GetPostList()}
+              group={await GetThreeWeekGroup()}
+              answers={await GetAnswerList()}
+            />
+            :
+            <div className={styles.message}>
+              <p>로그인 시 모든 기능을 사용할 수 있어요.</p>
+              <Link href="/login">
+                <Button
+                  size="small"
+                  iconName="log-in"
+                >
+                  로그인
+                </Button>
+              </Link>
+            </div>
+          }
         </div>
         <Footer />
       </div>
