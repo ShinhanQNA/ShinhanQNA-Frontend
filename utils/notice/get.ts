@@ -1,6 +1,6 @@
 "use server";
 
-import GetNoticeList from "./list";
+import GetCookie from "../cookie/get";
 import Notice from "@/types/notice";
 
 export default async function GetNotice(
@@ -8,8 +8,20 @@ export default async function GetNotice(
 ): Promise<
   Notice
 > {
-  const res = await GetNoticeList();
+  const backendUrl = `${process.env.BACKEND_BASE_URL}/notices/${noticeId}`;
+  if (!process.env.BACKEND_BASE_URL) throw new Error("server_misconfigured");
 
-  const data = res.find(notice => notice.id === Number(noticeId));
-  return data!;
+  const accessToken = await GetCookie("access_token");
+  if (!accessToken) throw new Error("unauthorized");
+
+  const res = await fetch(backendUrl, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json"
+    }
+  });
+  if (!res.ok) throw new Error("internal_server_error");
+
+  return res.json();
 }
