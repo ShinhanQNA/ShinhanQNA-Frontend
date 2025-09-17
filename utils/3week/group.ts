@@ -19,5 +19,7 @@ export default async function GetThreeWeekGroup(): Promise<
       "Content-Type": "application/json"
     }
   });
+  if (!res.ok) throw new Error("internal_server_error");
+
   return res.json();
 }

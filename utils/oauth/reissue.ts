@@ -16,7 +16,7 @@ export default async function DoReissue(
     body: JSON.stringify({ "refreshToken": refreshToken }),
     cache: "no-store"
   });
-  if (!res.ok) throw new Error("failed_to_reissue_token");
+  if (!res.ok) throw new Error("internal_server_error");
 
   return res.json();
 }

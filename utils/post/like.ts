@@ -21,6 +21,7 @@ export default async function DoLike(
       "Content-Type": "application/json"
     }
   });
+  if (!res.ok) throw new Error("internal_server_error");
 
   if (res.status === 400) {
     const backendUnlikeUrl = `${process.env.BACKEND_BASE_URL}/boards/${postId}/unlike`;
@@ -32,6 +33,8 @@ export default async function DoLike(
         "Content-Type": "application/json"
       }
     });
+    if (!res.ok) throw new Error("internal_server_error");
+
     return res.json();
   }
 
