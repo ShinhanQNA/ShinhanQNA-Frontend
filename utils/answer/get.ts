@@ -1,6 +1,6 @@
 "use server";
 
-import GetAnswerList from "./list";
+import GetCookie from "../cookie/get";
 import Answer from "@/types/answer";
 
 export default async function GetAnswer(
@@ -8,8 +8,20 @@ export default async function GetAnswer(
 ): Promise<
   Answer
 > {
-  const res = await GetAnswerList();
+  const backendUrl = `${process.env.BACKEND_BASE_URL}/answers/${answerId}`;
+  if (!process.env.BACKEND_BASE_URL) throw new Error("server_misconfigured");
 
-  const data = res.find(answer => answer.id === Number(answerId));
-  return data!;
+  const accessToken = await GetCookie("access_token");
+  if (!accessToken) throw new Error("unauthorized");
+
+  const res = await fetch(backendUrl, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json"
+    }
+  });
+  if (!res.ok) throw new Error("internal_server_error");
+
+  return res.json();
 }
