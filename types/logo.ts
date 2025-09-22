@@ -1,4 +1,4 @@
-export interface LogoProps {
+export default interface LogoProps {
   size?: number;
   className?: string;
   type?: "icon" | "text";
