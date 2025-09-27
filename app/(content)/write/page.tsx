@@ -39,7 +39,7 @@ export default function Write() {
             <input
               id="title"
               name="title"
-              className={`${styles.input} ${styles.titleInput}`}
+              className={`${styles.input} ${styles.title}`}
               aria-label="제목"
               placeholder="제목을 입력하세요"
               required
@@ -47,7 +47,7 @@ export default function Write() {
             <textarea
               id="content"
               name="content"
-              className={`${styles.input} ${styles.contentInput}`}
+              className={`${styles.input} ${styles.content}`}
               aria-label="내용"
               placeholder="정확한 전달을 위해 교수님 성함 혹은 과목명을 정확하게 기재해주세요."
               required
@@ -55,11 +55,7 @@ export default function Write() {
             <Button
               size="small"
               iconName="file-text"
-              type="button"
-              onClick={() => {
-                // 파일 업로드는 백엔드 스펙 확정 후 연결 예정
-                // (현재 JSON API에 파일 전송 미지원)
-              }}
+              onClick={null}
             >
               첨부파일
             </Button>
