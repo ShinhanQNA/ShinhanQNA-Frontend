@@ -47,9 +47,7 @@ export default function Profile() {
               <Button
                 variant="transparent"
                 iconName="circle-slash"
-                onClick={() => {
-                  // 회원 탈퇴 로직을 여기에 추가 예정
-                }}
+                onClick={() => { window.location.href = "/oauth/delete"; }}
               >
                 회원 탈퇴
               </Button>
