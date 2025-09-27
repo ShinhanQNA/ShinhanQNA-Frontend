@@ -1,5 +1,6 @@
 "use server";
 
+import { notFound } from "next/navigation";
 import GetCookie from "../cookie/get";
 import Post from "@/types/post";
 
@@ -21,7 +22,7 @@ export default async function GetPost(
       "Content-Type": "application/json"
     }
   });
-  if (!res.ok) throw new Error("internal_server_error");
+  if (!res.ok) return notFound();
 
   return res.json();
 }

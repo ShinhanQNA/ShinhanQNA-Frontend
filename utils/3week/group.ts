@@ -1,5 +1,6 @@
 "use server";
 
+import { notFound } from "next/navigation";
 import GetCookie from "../cookie/get";
 import ThreeWeekGroup from "@/types/threeweekgroup";
 
@@ -19,7 +20,7 @@ export default async function GetThreeWeekGroup(): Promise<
       "Content-Type": "application/json"
     }
   });
-  if (!res.ok) throw new Error("internal_server_error");
+  if (!res.ok) return notFound();
 
   return res.json();
 }
