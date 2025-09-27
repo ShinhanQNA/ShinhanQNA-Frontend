@@ -40,9 +40,7 @@ export default function Profile() {
               <Button
                 variant="transparent"
                 iconName="log-out"
-                onClick={() => {
-                  // 로그아웃 로직을 여기에 추가 예정
-                }}
+                onClick={() => { window.location.href = "/oauth/logout"; }}
               >
                 로그아웃
               </Button>
