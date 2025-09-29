@@ -1,0 +1,11 @@
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 16px;
+  align-self: stretch;
+}
+
+.orange {
+  background-color: var(--theme-accent-warning);
+}

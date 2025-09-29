@@ -3,10 +3,9 @@ import Image from "next/image";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Icon from "@/components/Icon";
-import Button from "@/components/Button";
+import Action from "@/components/Action";
 import GetCookie from "@/utils/cookie/get";
 import GetPost from "@/utils/post/get";
-
 import styles from "./page.module.css";
 
 export default async function Post({
@@ -53,42 +52,11 @@ export default async function Post({
               {post.likes}
             </div>
           </div>
-          <div className={styles.actions}>
-            {isMine ? (
-              <>
-                <Button
-                  size="small"
-                  variant="warn"
-                  iconName="trash"
-                >
-                  삭제
-                </Button>
-                <Button
-                  size="small"
-                  iconName="square-pen"
-                  className={styles.orange}
-                >
-                  수정
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button
-                  size="small"
-                  iconName="flag"
-                  className={styles.orange}
-                >
-                  신고
-                </Button>
-                <Button
-                  size="small"
-                  iconName="thumbs-up"
-                >
-                  추천
-                </Button>
-              </>
-            )}
-          </div>
+          <Action 
+            postId={slug} 
+            isMine={isMine} 
+            likes={post.likes} 
+          />
         </div>
         <Footer />
       </div>
