@@ -230,8 +230,8 @@ export default function Write() {
 
             {/* 기존 이미지 미리보기 (수정 모드) */}
             {existingImagePath && !selectedFile && (
-              <div className={styles.existingImagePreview}>
-                <div className={styles.imageContainer}>
+              <div className={styles.existing}>
+                <div className={styles.img}>
                   <Image
                     src={`/images/board-images/${existingImagePath.split('/').pop()}`}
                     alt="기존 이미지"
@@ -240,14 +240,15 @@ export default function Write() {
                     style={{ objectFit: "cover" }}
                     unoptimized
                   />
-                  <button 
-                    type="button" 
-                    onClick={removeExistingImage}
-                    className={styles.removeFile}
+                  <Button
+                    size="small"
+                    variant="transparent"
+                    onClick={removeFile}
+                    className={styles.remove}
                     disabled={pending}
                   >
                     ✕
-                  </button>
+                  </Button>
                 </div>
                 <span>기존 이미지 (교체하려면 새 파일을 선택하세요)</span>
               </div>
@@ -255,18 +256,19 @@ export default function Write() {
             
             {/* 파일 미리보기 */}
             {selectedFile && (
-              <div className={styles.filePreview}>
-                <div className={styles.fileInfo}>
+              <div className={styles.preview}>
+                <div className={styles.file}>
                   <span>{selectedFile.name}</span>
                   <span>({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)</span>
-                  <button 
-                    type="button" 
+                  <Button
+                    size="small"
+                    variant="transparent"
                     onClick={removeFile}
-                    className={styles.removeFile}
+                    className={styles.remove}
                     disabled={pending}
                   >
                     ✕
-                  </button>
+                  </Button>
                 </div>
               </div>
             )}
