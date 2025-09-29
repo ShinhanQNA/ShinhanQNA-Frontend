@@ -2,13 +2,13 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import styles from "./page.module.css";
 
-export default function Privacy() {
+export default function TermsAndConditions() {
   return (
     <main className={styles.page}>
       <Header />
       <div className={styles.main}>
         <div className={styles.content}>
-          <h1 className={styles.title}>법적고지</h1>
+          <h1 className={styles.title}>이용 약관</h1>
           <h2 className={styles.subtitle}>1. 개인정보의 수집 및 이용 목적</h2>
           <p className={styles.paragraph}>본 방침은 당사가 수집하는 개인정보의 항목, 수집 및 이용 목적, 보유 및 이용 기간, 개인정보의 제3자 제공에 관한 사항을 포함합니다.</p>
           <h2 className={styles.subtitle}>2. 수집하는 개인정보의 항목</h2>
