@@ -31,6 +31,22 @@ export default function Action({
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
   const router = useRouter();
 
+  // 통합된 모달 관리
+  const showErrorModal = (message: string) => {
+    setError(message);
+    setIsErrorModalOpen(true);
+  };
+
+  const showSuccessModal = (message: string) => {
+    setSuccessMessage(message);
+    setIsSuccessModalOpen(true);
+  };
+
+  const showInfoModal = (message: string) => {
+    setInfoMessage(message);
+    setIsInfoModalOpen(true);
+  };
+
   // 삭제 관련 함수들
   const handleDeleteClick = () => {
     setIsConfirmModalOpen(true);
@@ -63,13 +79,11 @@ export default function Action({
   const handleDeleteConfirm = async () => {
     try {
       setIsDeleting(true);
-      // 서버 액션이 바로 리다이렉트해서 이 코드는 실행되지 않을 것임
       await DeletePost(postId);
     } catch (error) {
-      setIsConfirmModalOpen(false);
+      closeConfirmModal();
       setIsDeleting(false);
-      setError("게시물 삭제에 실패했습니다.");
-      setIsErrorModalOpen(true);
+      showErrorModal("게시물 삭제에 실패했습니다.");
     }
   };
 
@@ -96,14 +110,12 @@ export default function Action({
   const handleReportConfirm = async () => {
     const trimmedReason = selectedReportReason.trim();
     if (!trimmedReason) {
-      setError("신고 사유를 입력해주세요.");
-      setIsErrorModalOpen(true);
+      showErrorModal("신고 사유를 입력해주세요.");
       return;
     }
 
     if (trimmedReason.length < 5) {
-      setError("신고 사유를 5자 이상 입력해주세요.");
-      setIsErrorModalOpen(true);
+      showErrorModal("신고 사유를 5자 이상 입력해주세요.");
       return;
     }
 
@@ -112,16 +124,13 @@ export default function Action({
       const res = await DoReport(postId, trimmedReason);
       closeReportModal();
       if (res.message === "already_reported") {
-        setInfoMessage("이미 해당 게시글을 신고하셨습니다.");
-        setIsInfoModalOpen(true);
+        showInfoModal("이미 해당 게시글을 신고하셨습니다.");
       } else {
-        setSuccessMessage("신고가 접수되었습니다.");
-        setIsSuccessModalOpen(true);
+        showSuccessModal("신고가 접수되었습니다.");
       }
-    } catch (error: any) {
+    } catch (error) {
       closeReportModal();
-      setError("신고 처리에 실패했습니다.");
-      setIsErrorModalOpen(true);
+      showErrorModal("신고 처리에 실패했습니다.");
     } finally {
       setIsReporting(false);
     }
@@ -134,8 +143,7 @@ export default function Action({
       await DoLike(postId);
       // 서버 액션에서 revalidatePath로 페이지가 새로고침됨
     } catch (error) {
-      setError("추천 처리에 실패했습니다.");
-      setIsErrorModalOpen(true);
+      showErrorModal("추천 처리에 실패했습니다.");
     } finally {
       setIsLiking(false);
     }
