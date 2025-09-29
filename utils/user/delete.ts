@@ -1,5 +1,6 @@
 "use server";
 
+import GetCookie from "../cookie/get";
 import Me from "@/types/me";
 
 export default async function DeleteMe(
@@ -9,6 +10,9 @@ export default async function DeleteMe(
 > {
   const backendUrl = `${process.env.BACKEND_BASE_URL}/users/me`;
   if (!process.env.BACKEND_BASE_URL) throw new Error("server_misconfigured");
+
+  const accessToken = await GetCookie("access_token");
+  if (!accessToken) throw new Error("unauthorized");
 
   const res = await fetch(backendUrl, {
     method: "DELETE",
