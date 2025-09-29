@@ -5,6 +5,7 @@ import Button from "@/components/Button";
 import Modal from "@/components/Modal";
 import DeletePost from "@/utils/post/delete";
 import DoLike from "@/utils/post/like";
+import DoReport from "@/utils/post/report";
 import ActionProps from "@/types/actions";
 import styles from "./action.module.css";
 
@@ -14,9 +15,16 @@ export default function Action({
 }: ActionProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isLiking, setIsLiking] = useState(false);
+  const [isReporting, setIsReporting] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [selectedReportReason, setSelectedReportReason] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [infoMessage, setInfoMessage] = useState<string | null>(null);
+  const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
 
   // 삭제 관련 함수들
   const handleDeleteClick = () => {
@@ -27,9 +35,24 @@ export default function Action({
     setIsConfirmModalOpen(false);
   };
 
+  const closeReportModal = () => {
+    setIsReportModalOpen(false);
+    setSelectedReportReason("");
+  };
+
   const closeErrorModal = () => {
     setIsErrorModalOpen(false);
     setError(null);
+  };
+
+  const closeSuccessModal = () => {
+    setIsSuccessModalOpen(false);
+    setSuccessMessage(null);
+  };
+
+  const closeInfoModal = () => {
+    setIsInfoModalOpen(false);
+    setInfoMessage(null);
   };
 
   const handleDeleteConfirm = async () => {
@@ -53,8 +76,41 @@ export default function Action({
 
   // 신고 버튼 클릭 핸들러
   const handleReportClick = () => {
-    // TODO: 신고 기능 구현
-    console.log("Report clicked for post:", postId);
+    setIsReportModalOpen(true);
+  };
+
+  const handleReportConfirm = async () => {
+    const trimmedReason = selectedReportReason.trim();
+    if (!trimmedReason) {
+      setError("신고 사유를 입력해주세요.");
+      setIsErrorModalOpen(true);
+      return;
+    }
+
+    if (trimmedReason.length < 5) {
+      setError("신고 사유를 5자 이상 입력해주세요.");
+      setIsErrorModalOpen(true);
+      return;
+    }
+
+    try {
+      setIsReporting(true);
+      const res = await DoReport(postId, trimmedReason);
+      closeReportModal();
+      if (res.message === "already_reported") {
+        setInfoMessage("이미 해당 게시글을 신고하셨습니다.");
+        setIsInfoModalOpen(true);
+      } else {
+        setSuccessMessage("신고가 접수되었습니다.");
+        setIsSuccessModalOpen(true);
+      }
+    } catch (error: any) {
+      closeReportModal();
+      setError("신고 처리에 실패했습니다.");
+      setIsErrorModalOpen(true);
+    } finally {
+      setIsReporting(false);
+    }
   };
 
   // 추천 버튼 클릭 핸들러
@@ -101,8 +157,9 @@ export default function Action({
               iconName="flag"
               className={styles.orange}
               onClick={handleReportClick}
+              disabled={isReporting}
             >
-              신고
+              {isReporting ? "신고 중..." : "신고"}
             </Button>
             <Button
               size="small"
@@ -145,6 +202,85 @@ export default function Action({
       >
         <p>이 게시글을 정말로 삭제하시겠습니까?</p>
         <p>삭제된 게시글은 복구할 수 없습니다.</p>
+      </Modal>
+
+      {/* 신고 사유 선택 모달 */}
+      <Modal
+        isOpen={isReportModalOpen}
+        onClose={closeReportModal}
+        title="게시글 신고"
+        actions={
+          <>
+            <Button
+              size="small"
+              onClick={closeReportModal}
+              type="button"
+              disabled={isReporting}
+            >
+              취소
+            </Button>
+            <Button
+              size="small"
+              variant="warn"
+              onClick={handleReportConfirm}
+              type="button"
+              disabled={isReporting || !selectedReportReason.trim()}
+            >
+              {isReporting ? "신고 중..." : "신고"}
+            </Button>
+          </>
+        }
+      >
+        <p>신고 사유를 구체적으로 입력해주세요:</p>
+        <textarea
+          value={selectedReportReason}
+          onChange={(e) => setSelectedReportReason(e.target.value)}
+          placeholder="신고 사유를 상세히 작성해주세요..."
+          maxLength={500}
+          rows={4}
+          className={styles.textarea}
+        />
+        <p
+          className={styles.paragraph}
+        >
+          {selectedReportReason.length}/500자
+        </p>
+      </Modal>
+
+      {/* 성공 모달 */}
+      <Modal
+        isOpen={isSuccessModalOpen}
+        onClose={closeSuccessModal}
+        title="신고 완료"
+        actions={
+          <Button
+            size="small"
+            onClick={closeSuccessModal}
+            type="button"
+          >
+            확인
+          </Button>
+        }
+      >
+        <p>{successMessage}</p>
+      </Modal>
+
+      {/* 정보 모달 */}
+      <Modal
+        isOpen={isInfoModalOpen}
+        onClose={closeInfoModal}
+        title="알림"
+        actions={
+          <Button
+            size="small"
+            onClick={closeInfoModal}
+            type="button"
+          >
+            확인
+          </Button>
+        }
+      >
+        <p>{infoMessage}</p>
       </Modal>
 
       {/* 에러 모달 */}
