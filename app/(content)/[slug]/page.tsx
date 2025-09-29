@@ -54,8 +54,7 @@ export default async function Post({
           </div>
           <Action 
             postId={slug} 
-            isMine={isMine} 
-            likes={post.likes} 
+            isMine={isMine}
           />
         </div>
         <Footer />

@@ -11,7 +11,6 @@ import styles from "./action.module.css";
 export default function Action({
   postId,
   isMine,
-  likes
 }: ActionProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isLiking, setIsLiking] = useState(false);
