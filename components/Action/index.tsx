@@ -1,17 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Button from "@/components/Button";
 import Modal from "@/components/Modal";
 import DeletePost from "@/utils/post/delete";
+import DoLike from "@/utils/post/like";
+import ActionProps from "@/types/actions";
 import styles from "./action.module.css";
-
-interface ActionProps {
-  postId: string;
-  isMine: boolean;
-  likes: number;
-}
 
 export default function Action({
   postId,
@@ -19,10 +14,10 @@ export default function Action({
   likes
 }: ActionProps) {
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isLiking, setIsLiking] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
-  const router = useRouter();
 
   // 삭제 관련 함수들
   const handleDeleteClick = () => {
@@ -64,9 +59,17 @@ export default function Action({
   };
 
   // 추천 버튼 클릭 핸들러
-  const handleLikeClick = () => {
-    // TODO: 추천 기능 구현
-    console.log("Like clicked for post:", postId);
+  const handleLikeClick = async () => {
+    try {
+      setIsLiking(true);
+      await DoLike(postId);
+      // 서버 액션에서 revalidatePath로 페이지가 새로고침됨
+    } catch (error) {
+      setError("추천 처리에 실패했습니다.");
+      setIsErrorModalOpen(true);
+    } finally {
+      setIsLiking(false);
+    }
   };
 
   return (
@@ -106,8 +109,9 @@ export default function Action({
               size="small"
               iconName="thumbs-up"
               onClick={handleLikeClick}
+              disabled={isLiking}
             >
-              추천
+              {isLiking ? "처리중..." : "추천"}
             </Button>
           </>
         )}
@@ -148,7 +152,7 @@ export default function Action({
       <Modal
         isOpen={isErrorModalOpen}
         onClose={closeErrorModal}
-        title="삭제 실패"
+        title="오류"
         actions={
           <Button
             size="small"

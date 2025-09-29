@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import GetCookie from "../cookie/get";
 import Like from "@/types/like";
 
@@ -21,7 +22,6 @@ export default async function DoLike(
       "Content-Type": "application/json"
     }
   });
-  if (!res.ok) throw new Error("internal_server_error");
 
   if (res.status === 400) {
     const backendUnlikeUrl = `${process.env.BACKEND_BASE_URL}/boards/${postId}/unlike`;
@@ -33,10 +33,16 @@ export default async function DoLike(
         "Content-Type": "application/json"
       }
     });
+    console.log(res);
     if (!res.ok) throw new Error("internal_server_error");
 
-    return res.json();
+    const result = res.json();
+    revalidatePath(`/${postId}`);
+    return result;
   }
+  if (!res.ok) throw new Error("internal_server_error");
 
-  return res.json();
+  const result = res.json();
+  revalidatePath(`/${postId}`);
+  return result;
 }
