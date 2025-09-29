@@ -1,7 +1,12 @@
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import Icon from "@/components/Icon";
+import Button from "@/components/Button";
+import GetCookie from "@/utils/cookie/get";
 import GetPost from "@/utils/post/get";
+
 import styles from "./page.module.css";
 
 export default async function Post({
@@ -14,6 +19,10 @@ export default async function Post({
 
   const post = await GetPost(slug);
 
+  const imageKey = post?.imagePath ? post.imagePath.split("/").pop() : null;
+
+  const isMine = post?.writerEmail == await GetCookie("email");
+
   return (
     <main className={styles.page}>
       <Header />
@@ -25,6 +34,61 @@ export default async function Post({
           <p className={styles.paragraph}>
             {post.content}
           </p>
+          {post.imagePath && (
+            <Image
+              src={`/images/board-images/${imageKey}`}
+              alt={`${post.title} 이미지`}
+              width={0}
+              height={0}
+              style={{ width: "100%", height: "auto" }}
+              unoptimized
+            />
+          )}
+          <div className={styles.info}>
+            <div className={styles.detail}>
+              <Icon
+                name="thumbs-up"
+                size={16}
+              />
+              {post.likes}
+            </div>
+          </div>
+          <div className={styles.actions}>
+            {isMine ? (
+              <>
+                <Button
+                  size="small"
+                  variant="warn"
+                  iconName="trash"
+                >
+                  삭제
+                </Button>
+                <Button
+                  size="small"
+                  iconName="square-pen"
+                  className={styles.orange}
+                >
+                  수정
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  size="small"
+                  iconName="flag"
+                  className={styles.orange}
+                >
+                  신고
+                </Button>
+                <Button
+                  size="small"
+                  iconName="thumbs-up"
+                >
+                  추천
+                </Button>
+              </>
+            )}
+          </div>
         </div>
         <Footer />
       </div>
