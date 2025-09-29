@@ -15,7 +15,6 @@ export default function StudentVerify() {
   const [name, setName] = useState("");
   const [department, setDepartment] = useState<SelectOption | null>(null);
   const [year, setYear] = useState<SelectOption | null>(null);
-  const [role, setRole] = useState("학생");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -48,35 +47,18 @@ export default function StudentVerify() {
     window.location.href = "/";
   };
 
-  const showErrorModal = (message: string) => {
-    setError(message);
-    setIsErrorModalOpen(true);
-  };
-
   const handleFileSelect = () => {
     fileInputRef.current?.click();
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (!files || files.length === 0) return;
+    
+    if (!files || files.length === 0) {
+      return;
+    }
 
     const file = files[0];
-    
-    // 5MB 크기 제한
-    const maxSize = 5 * 1024 * 1024;
-    if (file.size > maxSize) {
-      showErrorModal("파일 크기는 5MB를 초과할 수 없습니다.");
-      return;
-    }
-    
-    // 이미지 파일 타입 확인
-    const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
-    if (!allowedTypes.includes(file.type)) {
-      showErrorModal("JPG, PNG 형식의 이미지만 업로드 가능합니다.");
-      return;
-    }
-
     setSelectedFile(file);
   };
 
@@ -89,29 +71,38 @@ export default function StudentVerify() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const fileToSubmit = fileInputRef.current?.files?.[0] || selectedFile || null;
 
-    if (!students.trim()) {
-      showErrorModal("학번을 입력해주세요.");
-      return;
+    setError(null);
+
+    const trimmedStudents = students.trim();
+    const trimmedName = name.trim();
+
+    const missingItems: string[] = [];
+
+    if (!trimmedName) {
+      missingItems.push("이름");
     }
 
-    if (!name.trim()) {
-      showErrorModal("이름을 입력해주세요.");
-      return;
+    if (!trimmedStudents) {
+      missingItems.push("학번");
     }
 
-    if (!department) {
-      showErrorModal("학과를 선택해주세요.");
-      return;
+    if (!year?.value) {
+      missingItems.push("학년");
     }
 
-    if (!year) {
-      showErrorModal("학년을 선택해주세요.");
-      return;
+    if (!department?.value) {
+      missingItems.push("학과");
     }
 
-    if (!selectedFile) {
-      showErrorModal("학생증 사진을 업로드해주세요.");
+    if (!fileToSubmit) {
+      missingItems.push("학생증 사진");
+    }
+
+    if (missingItems.length > 0) {
+      setError(`다음 항목을 입력해주세요:\n• ${missingItems.join("\n• ")}`);
+      setIsErrorModalOpen(true);
       return;
     }
 
@@ -119,17 +110,17 @@ export default function StudentVerify() {
 
     try {
       await VerifyStudent(
-        parseInt(students),
-        name.trim(),
-        department.value,
-        parseInt(year.value),
-        role,
-        selectedFile
+        trimmedStudents,
+        trimmedName,
+        department!.value,
+        year!.value,
+        fileToSubmit
       );
       
       setIsSuccessModalOpen(true);
-    } catch (error: any) {
-      showErrorModal(error.message || "학생 인증에 실패했습니다.");
+    } catch (error) {
+      setError("학생 인증에 실패했습니다.");
+      setIsErrorModalOpen(true);
     } finally {
       setPending(false);
     }
@@ -151,7 +142,6 @@ export default function StudentVerify() {
               onChange={(e) => setName(e.target.value)}
               className={styles.input}
               disabled={pending}
-              required
             />
             <div className={styles.students}>
               <TextField
@@ -161,7 +151,6 @@ export default function StudentVerify() {
                 onChange={(e) => setStudents(e.target.value)}
                 className={styles.input}
                 disabled={pending}
-                required
               />
               <Select
                 label="학년"
@@ -181,7 +170,9 @@ export default function StudentVerify() {
             />
 
             <div className={styles.photo}>
-              <label className={styles.label}>학생증 사진</label>
+              <label className={styles.label}>
+                학생증 사진 {selectedFile ? "✓" : "(필수)"}
+              </label>
               <input
                 ref={fileInputRef}
                 type="file"
@@ -192,6 +183,7 @@ export default function StudentVerify() {
               <Button
                 size="small"
                 onClick={handleFileSelect}
+                type="button"
                 disabled={pending}
               >
                 {selectedFile ? "다른 파일 선택" : "학생증 첨부"}
@@ -200,7 +192,7 @@ export default function StudentVerify() {
               {selectedFile && (
                 <div className={styles.preview}>
                   <div className={styles.file}>
-                    <span>{selectedFile.name}</span>
+                    <span>✅ {selectedFile.name}</span>
                     <span>({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)</span>
                     <Button
                       size="small"

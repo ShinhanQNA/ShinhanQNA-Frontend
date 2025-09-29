@@ -5,6 +5,7 @@ import Me from "./types/me";
 // 여기에 명시된 경로는 인증 없이 접근 허용
 const PUBLIC_PATHS = [
   "/login", // 로그인 페이지
+  "/verify", // 학생 인증 페이지
   "/license", // 약관/라이선스
   "/privacy", // 개인정보 처리방침
   "/terms", // 서비스 이용약관
@@ -208,6 +209,15 @@ export default async function middleware(req: NextRequest) {
 
         const res = NextResponse.next();
         SaveInfo(res, protocol, info);
+        
+        // 학생 인증 여부 확인 (학생 인증 페이지가 아닌 경우에만)
+        if (pathname !== "/verify" && !info.user.studentCertified) {
+          if (IsHtmlNavigation(req)) {
+            return NextResponse.redirect(new URL("/verify", req.url));
+          }
+          return NextResponse.json({ error: "student_verification_required" }, { status: 403 });
+        }
+        
         return res;
       }
 
@@ -238,6 +248,26 @@ export default async function middleware(req: NextRequest) {
 
       const res = NextResponse.next()
       SaveJWT(res, protocol, jwt);
+      
+      // 새로운 액세스 토큰으로 사용자 정보 가져오기
+      const infoRes = await fetch(`${origin}/oauth/me`, {
+        headers: { "Authorization": jwt.access_token },
+        cache: "no-store"
+      });
+      
+      if (infoRes.status === 200) {
+        const info = await infoRes.json();
+        SaveInfo(res, protocol, info);
+        
+        // 학생 인증 여부 확인 (학생 인증 페이지가 아닌 경우에만)
+        if (pathname !== "/verify" && !info.user.studentCertified) {
+          if (IsHtmlNavigation(req)) {
+            return NextResponse.redirect(new URL("/verify", req.url));
+          }
+          return NextResponse.json({ error: "student_verification_required" }, { status: 403 });
+        }
+      }
+      
       return res;
     }
 

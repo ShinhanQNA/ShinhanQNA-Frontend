@@ -3,13 +3,14 @@
 import GetCookie from "../cookie/get";
 
 export default async function VerifyStudent(
-  students: number,
+  students: string,
   name: string,
   department: string,
-  year: number,
-  role: string,
-  image: File
-): Promise<{ message: string }> {
+  year: string,
+  image: File | null
+): Promise<
+  void
+> {
   const backendUrl = `${process.env.BACKEND_BASE_URL}/users/certify`;
   if (!process.env.BACKEND_BASE_URL) throw new Error("server_misconfigured");
 
@@ -17,13 +18,15 @@ export default async function VerifyStudent(
   if (!accessToken) throw new Error("unauthorized");
 
   const formData = new FormData();
-  formData.append("students", students.toString());
-  formData.append("name", name);
-  formData.append("department", department);
-  formData.append("year", year.toString());
-  formData.append("role", role);
-  formData.append("studentCertified", "false");
-  formData.append("image", image);
+  formData.append("students", students ?? "");
+  formData.append("name", name ?? "");
+  formData.append("department", department ?? "");
+  formData.append("year", year ?? "");
+  formData.append("role", "학생");
+  formData.append("studentCertified", "true");
+  if (image) {
+    formData.append("image", image);
+  }
 
   const res = await fetch(backendUrl, {
     method: "POST",
@@ -33,10 +36,7 @@ export default async function VerifyStudent(
     body: formData
   });
 
-  if (!res.ok) {
-    const errorData = await res.json();
-    throw new Error(errorData.message || "학생 인증에 실패했습니다.");
-  }
+  if (!res.ok) throw new Error("failed_to_verify_student");
 
   return res.json();
 }
