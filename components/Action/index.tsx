@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Button from "@/components/Button";
 import Modal from "@/components/Modal";
 import DeletePost from "@/utils/post/delete";
@@ -12,6 +13,9 @@ import styles from "./action.module.css";
 export default function Action({
   postId,
   isMine,
+  title = "",
+  content = "",
+  imagePath
 }: ActionProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isLiking, setIsLiking] = useState(false);
@@ -25,6 +29,7 @@ export default function Action({
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
+  const router = useRouter();
 
   // 삭제 관련 함수들
   const handleDeleteClick = () => {
@@ -70,8 +75,17 @@ export default function Action({
 
   // 수정 버튼 클릭 핸들러
   const handleEditClick = () => {
-    // TODO: 수정 페이지로 이동 로직 구현
-    console.log("Edit clicked for post:", postId);
+    const params = new URLSearchParams({
+      edit: postId,
+      title: title,
+      content: content
+    });
+    
+    if (imagePath) {
+      params.set('imagePath', imagePath);
+    }
+    
+    router.push(`/write?${params.toString()}`);
   };
 
   // 신고 버튼 클릭 핸들러

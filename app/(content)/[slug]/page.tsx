@@ -55,6 +55,9 @@ export default async function Post({
           <Action 
             postId={slug} 
             isMine={isMine}
+            title={post.title}
+            content={post.content}
+            imagePath={post.imagePath}
           />
         </div>
         <Footer />

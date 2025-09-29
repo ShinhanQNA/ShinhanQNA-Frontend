@@ -10,6 +10,10 @@
   background-color: var(--theme-accent-warning);
 }
 
+.orange:hover {
+  background-color: var(--color-orange-800);
+}
+
 .textarea {
   width: 100%;
   padding: 12px;

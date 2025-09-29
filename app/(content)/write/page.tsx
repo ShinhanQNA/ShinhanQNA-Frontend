@@ -1,12 +1,14 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRef, useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 import Header from "@/components/Header";
 import Button from "@/components/Button";
 import Footer from "@/components/Footer";
 import Modal from "@/components/Modal";
 import WritePost from "@/utils/post/write";
+import EditPost from "@/utils/post/edit";
 import styles from "./page.module.css";
 
 export default function Write() {
@@ -16,8 +18,28 @@ export default function Write() {
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [existingImagePath, setExistingImagePath] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  
+  // 수정 모드 여부 확인
+  const editPostId = searchParams?.get("edit");
+  const isEditMode = !!editPostId;
+
+  useEffect(() => {
+    if (isEditMode) {
+      const initialTitle = searchParams?.get("title");
+      const initialContent = searchParams?.get("content");
+      const initialImagePath = searchParams?.get("imagePath");
+      
+      if (initialTitle) setTitle(decodeURIComponent(initialTitle));
+      if (initialContent) setContent(decodeURIComponent(initialContent));
+      if (initialImagePath) setExistingImagePath(initialImagePath);
+    }
+  }, [isEditMode, searchParams]);
 
   const closeErrorModal = () => {
     setIsErrorModalOpen(false);
@@ -50,15 +72,15 @@ export default function Write() {
     e.preventDefault();
     
     const formData = new FormData(e.currentTarget);
-    const title = formData.get("title") as string;
-    const content = formData.get("content") as string;
+    const titleValue = formData.get("title") as string;
+    const contentValue = formData.get("content") as string;
 
-    if (!title?.trim()) {
+    if (!titleValue?.trim()) {
       showErrorModal("제목을 입력해주세요.");
       return;
     }
 
-    if (!content?.trim()) {
+    if (!contentValue?.trim()) {
       showErrorModal("내용을 입력해주세요.");
       return;
     }
@@ -66,16 +88,34 @@ export default function Write() {
     setPending(true);
     
     try {
-      const postId = await WritePost({
-        title: title.trim(),
-        content: content.trim(),
-        image: selectedFile || undefined
-      });
-      
-      // 성공 시 작성된 글 페이지로 이동
-      router.push(`/${postId}`);
+      if (isEditMode) {
+        // 수정 모드
+        const editFormData = new FormData();
+        editFormData.append("title", titleValue.trim());
+        editFormData.append("content", contentValue.trim());
+        
+        if (selectedFile) {
+          // 새 파일이 선택된 경우
+          editFormData.append("image", selectedFile);
+        } else if (!existingImagePath) {
+          // 기존 이미지가 삭제된 경우 (빈 파일로 처리)
+          editFormData.append("removeImage", "true");
+        }
+        
+        await EditPost(editFormData, editPostId);
+        router.push(`/${editPostId}`);
+      } else {
+        // 작성 모드
+        const postId = await WritePost({
+          title: titleValue.trim(),
+          content: contentValue.trim(),
+          image: selectedFile || undefined
+        });
+        
+        router.push(`/${postId}`);
+      }
     } catch (error) {
-      showErrorModal("게시글 작성에 실패했습니다. 다시 시도해주세요.");
+      showErrorModal(isEditMode ? "게시글 수정에 실패했습니다." : "게시글 작성에 실패했습니다. 다시 시도해주세요.");
     } finally {
       setPending(false);
     }
@@ -131,13 +171,17 @@ export default function Write() {
     }
   };
 
+  const removeExistingImage = () => {
+    setExistingImagePath(null);
+  };
+
   return (
     <main className={styles.page}>
       <Header />
       <div className={styles.main}>
         <div className={styles.content}>
           <h1 className={styles.headline}>
-            게시글 작성
+            {isEditMode ? "게시글 수정" : "게시글 작성"}
           </h1>
           <form className={styles.form} onSubmit={handleSubmit}>
             <input
@@ -148,6 +192,8 @@ export default function Write() {
               placeholder="제목을 입력하세요"
               required
               disabled={pending}
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
             />
             <textarea
               id="content"
@@ -157,6 +203,8 @@ export default function Write() {
               placeholder="정확한 전달을 위해 교수님 성함 혹은 과목명을 정확하게 기재해주세요."
               required
               disabled={pending}
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
             />
             
             {/* Hidden file input */}
@@ -179,6 +227,31 @@ export default function Write() {
             >
               {selectedFile ? "다른 파일 선택" : "첨부파일"}
             </Button>
+
+            {/* 기존 이미지 미리보기 (수정 모드) */}
+            {existingImagePath && !selectedFile && (
+              <div className={styles.existingImagePreview}>
+                <div className={styles.imageContainer}>
+                  <Image
+                    src={`/images/board-images/${existingImagePath.split('/').pop()}`}
+                    alt="기존 이미지"
+                    width={200}
+                    height={150}
+                    style={{ objectFit: "cover" }}
+                    unoptimized
+                  />
+                  <button 
+                    type="button" 
+                    onClick={removeExistingImage}
+                    className={styles.removeFile}
+                    disabled={pending}
+                  >
+                    ✕
+                  </button>
+                </div>
+                <span>기존 이미지 (교체하려면 새 파일을 선택하세요)</span>
+              </div>
+            )}
             
             {/* 파일 미리보기 */}
             {selectedFile && (
@@ -239,7 +312,10 @@ export default function Write() {
               type="submit"
               disabled={pending}
             >
-              {pending ? "작성 중..." : "작성하기"}
+              {pending 
+                ? (isEditMode ? "수정 중..." : "작성 중...") 
+                : (isEditMode ? "수정하기" : "작성하기")
+              }
             </Button>
           </form>
         </div>
