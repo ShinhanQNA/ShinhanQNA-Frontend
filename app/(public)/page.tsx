@@ -11,6 +11,7 @@ import styles from "./page.module.css";
 
 export default async function Home() {
   const accessToken = await GetCookie("access_token");
+  const isAdmin = Boolean(await GetCookie("admin"));
 
   return (
     <main className={styles.page}>
@@ -19,6 +20,7 @@ export default async function Home() {
         <div className={styles.content}>
           {accessToken ?
             <MainList
+              isAdmin={isAdmin}
               posts={await GetPostList()}
               group={await GetThreeWeekGroup()}
               answers={await GetAnswerList()}
