@@ -35,21 +35,12 @@
   max-width: 360px;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: end;
   gap: 12px;
 }
 
-.button {
+.input {
   width: 100%;
-}
-
-.kakao {
-  background-color: #FEE500;
-  color: var(--theme-text-primary);
-}
-
-.kakao:hover {
-  background-color: #EAD300
 }
 
 .admin {

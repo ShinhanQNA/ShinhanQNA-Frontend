@@ -158,6 +158,9 @@ export default async function middleware(req: NextRequest) {
   const refreshToken = GetCookie(req, "refresh_token");
   const accessExp = GetCookie(req, "access_exp");
 
+  // 관리자 확인
+  const isAdmin = Boolean(GetCookie(req, "admin"));
+
   // JWT 없을 때
   if (!accessToken && !refreshToken) {
     const hasCookies = req.cookies.getAll().length > 0;
@@ -199,6 +202,10 @@ export default async function middleware(req: NextRequest) {
         const info = await infoRes.json();
 
         const res = NextResponse.next();
+        // 관리자용 예외 처리
+        if (isAdmin) return res;
+        
+        // 사용자 정보 쿠키 저장
         SaveInfo(res, protocol, info);
 
         // 사용자 상태에 따른 접근 제어
@@ -287,6 +294,12 @@ export default async function middleware(req: NextRequest) {
       
       if (infoRes.status === 200) {
         const info = await infoRes.json();
+
+        const res = NextResponse.next();
+        // 관리자용 예외 처리
+        if (isAdmin) return res;
+        
+        // 사용자 정보 쿠키 저장
         SaveInfo(res, protocol, info);
 
         // 사용자 상태에 따른 접근 제어
