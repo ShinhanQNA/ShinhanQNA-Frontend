@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import type { SelectProps, SelectOption } from "@/types/select";
+import { useState, useRef, useEffect, useId } from "react";
+import SelectProps from "@/types/select";
+import SelectOption from "@/types/selectoption";
 import styles from "./select.module.css";
 import Icon from "@/components/Icon";
 
@@ -9,12 +10,14 @@ export default function Select({
   options,
   value,
   onChange,
+  label,
   placeholder = "선택하세요",
   variant = "default",
   className,
 }: SelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const selectRef = useRef<HTMLDivElement>(null);
+  const id = useId();
 
   const handleSelect = (option: SelectOption) => {
     onChange(option);
@@ -44,9 +47,19 @@ export default function Select({
 
   return (
     <div className={selectClassName} ref={selectRef}>
-      <div className={styles.trigger} onClick={() => setIsOpen(!isOpen)}>
-        <span>{value ? value.label : placeholder}</span>
-        <Icon name={isOpen ? "chevron-up" : "chevron-down"} size={16} />
+      {label && (
+        <label htmlFor={id} className={styles.label}>
+          {label}
+        </label>
+      )}
+      <div className={styles.trigger} onClick={() => setIsOpen(!isOpen)} id={id}>
+        <span>
+          {value ? value.label : placeholder}
+        </span>
+        <Icon
+          name={isOpen ? "chevron-up" : "chevron-down"}
+          size={16}
+        />
       </div>
       {isOpen && (
         <ul className={styles.options}>

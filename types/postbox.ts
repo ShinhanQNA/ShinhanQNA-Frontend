@@ -1,13 +1,12 @@
-export interface PostBoxProps {
+export default interface PostBoxProps {
   type: "post" | "selected" | "notice" | "signup";
   isAdmin?: boolean;
-  path?: string;
+  path?: string | string[];
   slug: number;
   title: string;
   content?: string;
   likes?: number;
   flags?: number;
   bans?: number;
-  opinions?: number;
-  status?: "waiting" | "completed";
+  status?: "완료" | "응답 대기";
 }

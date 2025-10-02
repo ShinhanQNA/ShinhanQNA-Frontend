@@ -1,0 +1,48 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+import GetCookie from "../cookie/get";
+import Like from "@/types/like";
+
+export default async function DoLike(
+  postId: string
+): Promise<
+  Like
+> {
+  const backendLikeUrl = `${process.env.BACKEND_BASE_URL}/boards/${postId}/like`;
+  if (!process.env.BACKEND_BASE_URL) throw new Error("server_misconfigured");
+
+  const accessToken = await GetCookie("access_token")
+  if (!accessToken) throw new Error("unauthorized");
+
+  const res = await fetch(backendLikeUrl, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json"
+    }
+  });
+
+  if (res.status === 400) {
+    const backendUnlikeUrl = `${process.env.BACKEND_BASE_URL}/boards/${postId}/unlike`;
+
+    const res = await fetch(backendUnlikeUrl, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json"
+      }
+    });
+    console.log(res);
+    if (!res.ok) throw new Error("internal_server_error");
+
+    const result = res.json();
+    revalidatePath(`/${postId}`);
+    return result;
+  }
+  if (!res.ok) throw new Error("internal_server_error");
+
+  const result = res.json();
+  revalidatePath(`/${postId}`);
+  return result;
+}

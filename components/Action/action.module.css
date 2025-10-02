@@ -1,0 +1,33 @@
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 16px;
+  align-self: stretch;
+}
+
+.orange {
+  background-color: var(--theme-accent-warning);
+}
+
+.orange:hover {
+  background-color: var(--color-orange-800);
+}
+
+.textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  resize: none;
+  margin-top: 8px;
+}
+
+.paragraph {
+  font-size: var(--text-paragraph-1-size);
+  font-weight: var(--text-paragraph-1-weight);
+  line-height: var(--text-paragraph-1-line-height);
+  color: var(--theme-text-secondary);
+}

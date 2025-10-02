@@ -1,7 +1,7 @@
 "use client";
 
 import { useId } from "react";
-import type { TextFieldProps } from "@/types/textfield";
+import TextFieldProps from "@/types/textfield";
 import styles from "./textfield.module.css";
 
 export default function TextField({
@@ -10,8 +10,9 @@ export default function TextField({
   error = false,
   className,
   ...rest
-}: TextFieldProps) {;
-  const id = rest.id || useId();
+}: TextFieldProps) {
+  const autoId = useId();
+  const id = rest.id || autoId;
 
   const containerClassName = [
     styles.textfield,

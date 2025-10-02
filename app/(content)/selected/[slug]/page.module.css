@@ -1,0 +1,33 @@
+.main {
+  margin: 32px auto;
+  padding: 0 20px;
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  column-gap: 16px;
+  max-width: 1120px;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font-size: var(--text-title-2-size);
+  font-weight: var(--text-title-2-weight);
+  line-height: var(--text-title-2-line-height);
+  color: var(--theme-text-primary);
+}
+
+@media (max-width: 886px) {
+  .main {
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .title {
+    padding: 0 20px 16px;
+  }
+}
