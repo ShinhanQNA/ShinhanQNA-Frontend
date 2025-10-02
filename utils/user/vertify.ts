@@ -12,6 +12,7 @@ export default async function VerifyStudent(
   void
 > {
   const backendUrl = `${process.env.BACKEND_BASE_URL}/users/certify`;
+  const stateUrl = `${process.env.BACKEND_BASE_URL}/users/me/status`;
   if (!process.env.BACKEND_BASE_URL) throw new Error("server_misconfigured");
 
   const accessToken = await GetCookie("access_token");
@@ -35,8 +36,19 @@ export default async function VerifyStudent(
     },
     body: formData
   });
-
   if (!res.ok) throw new Error("failed_to_verify_student");
+
+  const stateRes = await fetch(stateUrl, {
+    method: "PUT",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      status: "가입 대기 중"
+    }),
+  });
+  if (!stateRes.ok) throw new Error("failed_to_update_state");
 
   return res.json();
 }
