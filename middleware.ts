@@ -210,6 +210,7 @@ export default async function middleware(req: NextRequest) {
         SaveInfo(res, protocol, info);
 
         const isPending = info.user.studentCertified && info.user.status === "가입 대기 중";
+        const isDenied  = info.user.studentCertified && info.user.status === "가입 거절";
         const isCompleted = info.user.status === "가입 완료";
 
         if (isPending && pathname !== "/pending") {
@@ -219,7 +220,14 @@ export default async function middleware(req: NextRequest) {
           return NextResponse.json({ error: "pending_approval" }, { status: 403 });
         }
 
-        if (!isCompleted && !isPending && pathname !== "/verify") {
+        if (isDenied && !(pathname === "/deny" || pathname === "/verify")) {
+          if (IsHtmlNavigation(req)) {
+            return NextResponse.redirect(new URL("/deny", req.url));
+          }
+          return NextResponse.json({ error: "denied_approval" }, { status: 403 });
+        }
+
+        if (!isCompleted && !isDenied && !isPending && pathname !== "/verify") {
           if (IsHtmlNavigation(req)) {
             return NextResponse.redirect(new URL("/verify", req.url));
           }
@@ -268,6 +276,7 @@ export default async function middleware(req: NextRequest) {
         SaveInfo(res, protocol, info);
 
         const isPending = info.user.studentCertified && info.user.status === "가입 대기 중";
+        const isDenied  = info.user.studentCertified && info.user.status === "가입 거절";
         const isCompleted = info.user.status === "가입 완료";
 
         if (isPending && pathname !== "/pending") {
@@ -277,7 +286,14 @@ export default async function middleware(req: NextRequest) {
           return NextResponse.json({ error: "pending_approval" }, { status: 403 });
         }
 
-        if (!isCompleted && !isPending && pathname !== "/verify") {
+        if (isDenied && !(pathname === "/deny" || pathname === "/verify")) {
+          if (IsHtmlNavigation(req)) {
+            return NextResponse.redirect(new URL("/deny", req.url));
+          }
+          return NextResponse.json({ error: "denied_approval" }, { status: 403 });
+        }
+
+        if (!isCompleted && !isDenied && !isPending && pathname !== "/verify") {
           if (IsHtmlNavigation(req)) {
             return NextResponse.redirect(new URL("/verify", req.url));
           }
