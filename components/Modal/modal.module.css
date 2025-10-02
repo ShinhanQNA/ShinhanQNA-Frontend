@@ -115,6 +115,7 @@
   font-weight: var(--text-paragraph-1-weight);
   line-height: var(--text-paragraph-1-line-height);
   color: var(--theme-text-primary);
+  word-break: keep-all;
 }
 
 .actions {
