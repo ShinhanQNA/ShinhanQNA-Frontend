@@ -1,7 +1,7 @@
 import Logo from "@/components/Logo";
 import styles from "./page.module.css";
 
-export default function StudentVerify() {
+export default function Pending() {
   return (
     <main className={styles.page}>
       <div className={styles.aside}>
