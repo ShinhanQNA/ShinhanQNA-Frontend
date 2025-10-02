@@ -6,7 +6,7 @@ import Button from "@/components/Button";
 import TextField from "@/components/TextField";
 import Select from "@/components/Select";
 import Modal from "@/components/Modal";
-import VerifyStudent from "@/utils/user/vertify";
+import VerifyStudent from "@/utils/user/verify";
 import SelectOption from "@/types/selectoption";
 import styles from "./page.module.css";
 
