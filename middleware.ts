@@ -210,8 +210,16 @@ export default async function middleware(req: NextRequest) {
         SaveInfo(res, protocol, info);
 
         const isPending = info.user.studentCertified && info.user.status === "가입 대기 중";
-        const isDenied  = info.user.studentCertified && info.user.status === "가입 거절";
+        const isDenied = info.user.studentCertified && info.user.status === "가입 거절";
         const isCompleted = info.user.status === "가입 완료";
+        const isCompletedCertified = info.user.studentCertified && isCompleted;
+
+        if (isCompletedCertified && pathname === "/pending" || pathname === "/verify" || pathname === "/deny") {
+          if (IsHtmlNavigation(req)) {
+            return NextResponse.redirect(new URL("/", req.url));
+          }
+          return NextResponse.json({ error: "already_verified" }, { status: 403 });
+        }
 
         if (isPending && pathname !== "/pending") {
           if (IsHtmlNavigation(req)) {
@@ -220,7 +228,7 @@ export default async function middleware(req: NextRequest) {
           return NextResponse.json({ error: "pending_approval" }, { status: 403 });
         }
 
-        if (isDenied && !(pathname === "/deny" || pathname === "/verify")) {
+        if (isDenied && pathname !== "/deny" && pathname !== "/verify") {
           if (IsHtmlNavigation(req)) {
             return NextResponse.redirect(new URL("/deny", req.url));
           }
@@ -276,8 +284,16 @@ export default async function middleware(req: NextRequest) {
         SaveInfo(res, protocol, info);
 
         const isPending = info.user.studentCertified && info.user.status === "가입 대기 중";
-        const isDenied  = info.user.studentCertified && info.user.status === "가입 거절";
+        const isDenied = info.user.studentCertified && info.user.status === "가입 거절";
         const isCompleted = info.user.status === "가입 완료";
+        const isCompletedCertified = info.user.studentCertified && isCompleted;
+
+        if (isCompletedCertified && pathname === "/pending" || pathname === "/verify" || pathname === "/deny") {
+          if (IsHtmlNavigation(req)) {
+            return NextResponse.redirect(new URL("/", req.url));
+          }
+          return NextResponse.json({ error: "already_verified" }, { status: 403 });
+        }
 
         if (isPending && pathname !== "/pending") {
           if (IsHtmlNavigation(req)) {
@@ -286,7 +302,7 @@ export default async function middleware(req: NextRequest) {
           return NextResponse.json({ error: "pending_approval" }, { status: 403 });
         }
 
-        if (isDenied && !(pathname === "/deny" || pathname === "/verify")) {
+        if (isDenied && pathname !== "/deny" && pathname !== "/verify") {
           if (IsHtmlNavigation(req)) {
             return NextResponse.redirect(new URL("/deny", req.url));
           }
