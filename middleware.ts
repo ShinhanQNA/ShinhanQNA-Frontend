@@ -5,7 +5,6 @@ import Me from "./types/me";
 // 여기에 명시된 경로는 인증 없이 접근 허용
 const PUBLIC_PATHS = [
   "/login", // 로그인 페이지
-  "/verify", // 학생 인증 페이지
   "/license", // 약관/라이선스
   "/privacy", // 개인정보 처리방침
   "/terms", // 서비스 이용약관
