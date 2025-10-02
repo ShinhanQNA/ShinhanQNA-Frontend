@@ -295,7 +295,6 @@ export default async function middleware(req: NextRequest) {
       if (infoRes.status === 200) {
         const info = await infoRes.json();
 
-        const res = NextResponse.next();
         // 관리자용 예외 처리
         if (isAdmin) return res;
         
