@@ -29,6 +29,7 @@ export type IconName =
   | "menu"
   | "panels-top-left"
   | "plus"
+  | "refresh-ccw"
   | "shield-user"
   | "square-pen"
   | "star"
