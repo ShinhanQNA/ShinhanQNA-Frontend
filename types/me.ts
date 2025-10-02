@@ -7,7 +7,7 @@ interface User {
   department: string | null;
   studentCardImagePath: string | null;
   students: string | null;
-  status: "가입 대기 중" | "가입 완료";
+  status: "가입 대기 중" | "가입 완료" | "가입 거절";
   studentCertified: boolean;
 }
 
