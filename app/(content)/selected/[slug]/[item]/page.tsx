@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import Header from "@/components/Header"
 import Footer from "@/components/Footer";
-import GetThreeWeekPost from "@/utils/3week/get";
+import GetPost from "@/utils/post/get";
 import styles from "./page.module.css";
 
 export default async function SelectedPost({
@@ -13,7 +14,9 @@ export default async function SelectedPost({
   const { slug, item } = await params;
   if (!slug || !item) return notFound();
 
-  const post = await GetThreeWeekPost(slug, item);
+  const post = await GetPost(slug);
+
+  const imageKey = post?.imagePath ? post.imagePath.split("/").pop() : null;
 
   return (
     <main className={styles.page}>
@@ -26,6 +29,16 @@ export default async function SelectedPost({
           <p>
             {post.content}
           </p>
+          {post.imagePath && (
+            <Image
+              src={`/images/board-images/${imageKey}`}
+              alt={`${post.title} 이미지`}
+              width={0}
+              height={0}
+              style={{ width: "100%", height: "auto" }}
+              unoptimized
+            />
+          )}
         </div>
         <Footer />
       </div>
