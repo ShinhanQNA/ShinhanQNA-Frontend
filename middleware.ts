@@ -201,11 +201,22 @@ export default async function middleware(req: NextRequest) {
         const res = NextResponse.next();
         SaveInfo(res, protocol, info);
 
+        // 사용자 상태에 따른 접근 제어
         const isCompleted = info.user.studentCertified === true && info.user.status === "가입 완료";
         const needVerify = info.user.studentCertified === false && info.user.status === "가입 대기 중";
         const isPending = info.user.studentCertified === true && info.user.status === "가입 대기 중";
         const isDenied = info.user.status === "가입 거절";
+        const isBanned = info.user.status === "차단";
 
+        // 차단된 사용자는 모든 페이지 접근 차단
+        if (isBanned && !(pathname === "/ban" || pathname === "/objection")) {
+          if (IsHtmlNavigation(req)) {
+            return NextResponse.redirect(new URL("/ban", req.url));
+          }
+          return NextResponse.json({ error: "banned_user" }, { status: 403 });
+        }
+
+        // 이미 인증 완료된 사용자가 인증 관련 페이지 접근 시 차단
         if (isCompleted && (pathname === "/pending" || pathname === "/verify" || pathname === "/deny")) {
           if (IsHtmlNavigation(req)) {
             return NextResponse.redirect(new URL("/", req.url));
@@ -213,6 +224,7 @@ export default async function middleware(req: NextRequest) {
           return NextResponse.json({ error: "already_verified" }, { status: 403 });
         }
 
+        // 학생 인증 필요 사용자가 인증 페이지 외 접근 시 차단
         if (needVerify && pathname !== "/verify") {
           if (IsHtmlNavigation(req)) {
             return NextResponse.redirect(new URL("/verify", req.url));
@@ -220,6 +232,7 @@ export default async function middleware(req: NextRequest) {
           return NextResponse.json({ error: "student_verification_required" }, { status: 403 });
         }
 
+        // 가입 승인 대기 중 사용자가 대기 페이지 외 접근 시 차단
         if (isPending && pathname !== "/pending") {
           if (IsHtmlNavigation(req)) {
             return NextResponse.redirect(new URL("/pending", req.url));
@@ -227,6 +240,7 @@ export default async function middleware(req: NextRequest) {
           return NextResponse.json({ error: "pending_approval" }, { status: 403 });
         }
 
+        // 가입 거절된 사용자가 거절 페이지 외 접근 시 차단
         if (isDenied && !(pathname === "/deny" || pathname === "/verify")) {
           if (IsHtmlNavigation(req)) {
             return NextResponse.redirect(new URL("/deny", req.url));
@@ -275,11 +289,22 @@ export default async function middleware(req: NextRequest) {
         const info = await infoRes.json();
         SaveInfo(res, protocol, info);
 
+        // 사용자 상태에 따른 접근 제어
         const isCompleted = info.user.studentCertified === true && info.user.status === "가입 완료";
         const needVerify = info.user.studentCertified === false && info.user.status === "가입 대기 중";
         const isPending = info.user.studentCertified === true && info.user.status === "가입 대기 중";
         const isDenied = info.user.status === "가입 거절";
+        const isBanned = info.user.status === "차단";
 
+        // 차단된 사용자는 모든 페이지 접근 차단
+        if (isBanned && !(pathname === "/ban" || pathname === "/objection")) {
+          if (IsHtmlNavigation(req)) {
+            return NextResponse.redirect(new URL("/ban", req.url));
+          }
+          return NextResponse.json({ error: "banned_user" }, { status: 403 });
+        }
+
+        // 이미 인증 완료된 사용자가 인증 관련 페이지 접근 시 차단
         if (isCompleted && (pathname === "/pending" || pathname === "/verify" || pathname === "/deny")) {
           if (IsHtmlNavigation(req)) {
             return NextResponse.redirect(new URL("/", req.url));
@@ -287,6 +312,7 @@ export default async function middleware(req: NextRequest) {
           return NextResponse.json({ error: "already_verified" }, { status: 403 });
         }
 
+        // 학생 인증 필요 사용자가 인증 페이지 외 접근 시 차단
         if (needVerify && pathname !== "/verify") {
           if (IsHtmlNavigation(req)) {
             return NextResponse.redirect(new URL("/verify", req.url));
@@ -294,6 +320,7 @@ export default async function middleware(req: NextRequest) {
           return NextResponse.json({ error: "student_verification_required" }, { status: 403 });
         }
 
+        // 가입 승인 대기 중 사용자가 대기 페이지 외 접근 시 차단
         if (isPending && pathname !== "/pending") {
           if (IsHtmlNavigation(req)) {
             return NextResponse.redirect(new URL("/pending", req.url));
@@ -301,6 +328,7 @@ export default async function middleware(req: NextRequest) {
           return NextResponse.json({ error: "pending_approval" }, { status: 403 });
         }
 
+        // 가입 거절된 사용자가 거절 페이지 외 접근 시 차단
         if (isDenied && !(pathname === "/deny" || pathname === "/verify")) {
           if (IsHtmlNavigation(req)) {
             return NextResponse.redirect(new URL("/deny", req.url));
