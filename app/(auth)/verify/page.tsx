@@ -10,7 +10,7 @@ import VerifyStudent from "@/utils/user/vertify";
 import SelectOption from "@/types/selectoption";
 import styles from "./page.module.css";
 
-export default function StudentVerify() {
+export default function Verify() {
   const [students, setStudents] = useState("");
   const [name, setName] = useState("");
   const [department, setDepartment] = useState<SelectOption | null>(null);
