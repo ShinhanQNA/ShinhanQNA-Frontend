@@ -1,9 +1,14 @@
+"use client";
+
 import Link from "next/link";
 import Logo from "@/components/Logo";
 import Button from "@/components/Button";
+import { useAdmin } from "@/context/admin";
 import styles from "./header.module.css";
 
 export default function Header() {
+  const { admin } = useAdmin();
+
   return (
     <header className={styles.header}>
       <div className={styles.desktop}>
@@ -17,7 +22,7 @@ export default function Header() {
               size="small"
               iconName="plus"
             >
-              새 게시글
+              {admin ? "새 답변" : "새 게시글"}
             </Button>
           </Link>
           <Link href="/notice">
@@ -30,13 +35,23 @@ export default function Header() {
             </Button>
           </Link>
           <Link href="/profile">
-            <Button
-              variant="linear"
-              size="small"
-              iconName="user"
-            >
-              프로필
-            </Button>
+            {admin ? (
+              <Button
+                variant="linear"
+                size="small"
+                iconName="shield-user"
+              >
+                관리자
+              </Button>
+            ) : (
+              <Button
+                variant="linear"
+                size="small"
+                iconName="user"
+              >
+                프로필
+              </Button>
+            )}
           </Link>
         </div>
       </div>
