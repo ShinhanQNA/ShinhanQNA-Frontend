@@ -20,6 +20,14 @@
   color: var(--theme-text-primary);
 }
 
+.paragraph {
+  font-size: var(--text-paragraph-1-size);
+  font-weight: var(--text-paragraph-1-weight);
+  line-height: var(--text-paragraph-1-line-height);
+  color: var(--theme-text-primary);
+  word-break: keep-all;
+}
+
 @media (max-width: 886px) {
   .main {
     padding: 0;

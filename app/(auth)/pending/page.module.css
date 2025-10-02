@@ -36,6 +36,7 @@
   font-weight: var(--text-body-1-weight);
   line-height: var(--text-body-1-line-height);
   text-align: center;
+  word-break: keep-all;
 }
 
 @media (max-width: 886px) {
