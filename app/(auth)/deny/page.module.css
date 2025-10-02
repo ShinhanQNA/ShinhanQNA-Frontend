@@ -34,7 +34,8 @@
 .content {
   font-size: var(--text-body-1-size);
   font-weight: var(--text-body-1-weight);
-  line-height: var(--text-body-1-line-height);;
+  line-height: var(--text-body-1-line-height);
+  text-align: center;
 }
 
 @media (max-width: 886px) {
