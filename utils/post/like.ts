@@ -33,7 +33,6 @@ export default async function DoLike(
         "Content-Type": "application/json"
       }
     });
-    console.log(res);
     if (!res.ok) throw new Error("internal_server_error");
 
     const result = res.json();
