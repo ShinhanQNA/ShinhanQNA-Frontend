@@ -148,14 +148,6 @@ function SaveInfo(
     info.user.studentCertified ? "true" : "false",
     protocol
   )
-
-  // 유저 경고 정보
-  SetCookie(
-    res,
-    "warnings",
-    JSON.stringify(info.warnings),
-    protocol
-  )
 }
 
 export default async function middleware(req: NextRequest) {
@@ -209,16 +201,23 @@ export default async function middleware(req: NextRequest) {
         const res = NextResponse.next();
         SaveInfo(res, protocol, info);
 
-        const isPending = info.user.studentCertified && info.user.status === "가입 대기 중";
-        const isDenied = info.user.studentCertified && info.user.status === "가입 거절";
-        const isCompleted = info.user.status === "가입 완료";
-        const isCompletedCertified = info.user.studentCertified && isCompleted;
+        const isCompleted = info.user.studentCertified === true && info.user.status === "가입 완료";
+        const needVerify = info.user.studentCertified === false && info.user.status === "가입 대기 중";
+        const isPending = info.user.studentCertified === true && info.user.status === "가입 대기 중";
+        const isDenied = info.user.status === "가입 거절";
 
-        if (isCompletedCertified && pathname === "/pending" || pathname === "/verify" || pathname === "/deny") {
+        if (isCompleted && (pathname === "/pending" || pathname === "/verify" || pathname === "/deny")) {
           if (IsHtmlNavigation(req)) {
             return NextResponse.redirect(new URL("/", req.url));
           }
           return NextResponse.json({ error: "already_verified" }, { status: 403 });
+        }
+
+        if (needVerify && pathname !== "/verify") {
+          if (IsHtmlNavigation(req)) {
+            return NextResponse.redirect(new URL("/verify", req.url));
+          }
+          return NextResponse.json({ error: "student_verification_required" }, { status: 403 });
         }
 
         if (isPending && pathname !== "/pending") {
@@ -228,18 +227,11 @@ export default async function middleware(req: NextRequest) {
           return NextResponse.json({ error: "pending_approval" }, { status: 403 });
         }
 
-        if (isDenied && pathname !== "/deny" && pathname !== "/verify") {
+        if (isDenied && !(pathname === "/deny" || pathname === "/verify")) {
           if (IsHtmlNavigation(req)) {
             return NextResponse.redirect(new URL("/deny", req.url));
           }
           return NextResponse.json({ error: "denied_approval" }, { status: 403 });
-        }
-
-        if (!isCompleted && !isDenied && !isPending && pathname !== "/verify") {
-          if (IsHtmlNavigation(req)) {
-            return NextResponse.redirect(new URL("/verify", req.url));
-          }
-          return NextResponse.json({ error: "student_verification_required" }, { status: 403 });
         }
 
         return res;
@@ -283,16 +275,23 @@ export default async function middleware(req: NextRequest) {
         const info = await infoRes.json();
         SaveInfo(res, protocol, info);
 
-        const isPending = info.user.studentCertified && info.user.status === "가입 대기 중";
-        const isDenied = info.user.studentCertified && info.user.status === "가입 거절";
-        const isCompleted = info.user.status === "가입 완료";
-        const isCompletedCertified = info.user.studentCertified && isCompleted;
+        const isCompleted = info.user.studentCertified === true && info.user.status === "가입 완료";
+        const needVerify = info.user.studentCertified === false && info.user.status === "가입 대기 중";
+        const isPending = info.user.studentCertified === true && info.user.status === "가입 대기 중";
+        const isDenied = info.user.status === "가입 거절";
 
-        if (isCompletedCertified && pathname === "/pending" || pathname === "/verify" || pathname === "/deny") {
+        if (isCompleted && (pathname === "/pending" || pathname === "/verify" || pathname === "/deny")) {
           if (IsHtmlNavigation(req)) {
             return NextResponse.redirect(new URL("/", req.url));
           }
           return NextResponse.json({ error: "already_verified" }, { status: 403 });
+        }
+
+        if (needVerify && pathname !== "/verify") {
+          if (IsHtmlNavigation(req)) {
+            return NextResponse.redirect(new URL("/verify", req.url));
+          }
+          return NextResponse.json({ error: "student_verification_required" }, { status: 403 });
         }
 
         if (isPending && pathname !== "/pending") {
@@ -302,18 +301,11 @@ export default async function middleware(req: NextRequest) {
           return NextResponse.json({ error: "pending_approval" }, { status: 403 });
         }
 
-        if (isDenied && pathname !== "/deny" && pathname !== "/verify") {
+        if (isDenied && !(pathname === "/deny" || pathname === "/verify")) {
           if (IsHtmlNavigation(req)) {
             return NextResponse.redirect(new URL("/deny", req.url));
           }
           return NextResponse.json({ error: "denied_approval" }, { status: 403 });
-        }
-
-        if (!isCompleted && !isDenied && !isPending && pathname !== "/verify") {
-          if (IsHtmlNavigation(req)) {
-            return NextResponse.redirect(new URL("/verify", req.url));
-          }
-          return NextResponse.json({ error: "student_verification_required" }, { status: 403 });
         }
       }
 
