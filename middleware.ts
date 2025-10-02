@@ -208,15 +208,24 @@ export default async function middleware(req: NextRequest) {
 
         const res = NextResponse.next();
         SaveInfo(res, protocol, info);
-        
-        // 학생 인증 여부 확인 (학생 인증 페이지가 아닌 경우에만)
-        if (pathname !== "/verify" && info.user.status !== "가입 완료") {
+
+        const isPending = info.user.studentCertified && info.user.status === "가입 대기 중";
+        const isCompleted = info.user.status === "가입 완료";
+
+        if (isPending && pathname !== "/pending") {
+          if (IsHtmlNavigation(req)) {
+            return NextResponse.redirect(new URL("/pending", req.url));
+          }
+          return NextResponse.json({ error: "pending_approval" }, { status: 403 });
+        }
+
+        if (!isCompleted && !isPending && pathname !== "/verify") {
           if (IsHtmlNavigation(req)) {
             return NextResponse.redirect(new URL("/verify", req.url));
           }
           return NextResponse.json({ error: "student_verification_required" }, { status: 403 });
         }
-        
+
         return res;
       }
 
@@ -257,16 +266,25 @@ export default async function middleware(req: NextRequest) {
       if (infoRes.status === 200) {
         const info = await infoRes.json();
         SaveInfo(res, protocol, info);
-        
-        // 학생 인증 여부 확인 (학생 인증 페이지가 아닌 경우에만)
-        if (pathname !== "/verify" && info.user.status !== "가입 완료") {
+
+        const isPending = info.user.studentCertified && info.user.status === "가입 대기 중";
+        const isCompleted = info.user.status === "가입 완료";
+
+        if (isPending && pathname !== "/pending") {
+          if (IsHtmlNavigation(req)) {
+            return NextResponse.redirect(new URL("/pending", req.url));
+          }
+          return NextResponse.json({ error: "pending_approval" }, { status: 403 });
+        }
+
+        if (!isCompleted && !isPending && pathname !== "/verify") {
           if (IsHtmlNavigation(req)) {
             return NextResponse.redirect(new URL("/verify", req.url));
           }
           return NextResponse.json({ error: "student_verification_required" }, { status: 403 });
         }
       }
-      
+
       return res;
     }
 
