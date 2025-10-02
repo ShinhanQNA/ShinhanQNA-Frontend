@@ -211,7 +211,7 @@ export default async function middleware(req: NextRequest) {
         SaveInfo(res, protocol, info);
         
         // 학생 인증 여부 확인 (학생 인증 페이지가 아닌 경우에만)
-        if (pathname !== "/verify" && !info.user.studentCertified) {
+        if (pathname !== "/verify" && info.user.status !== "가입 완료") {
           if (IsHtmlNavigation(req)) {
             return NextResponse.redirect(new URL("/verify", req.url));
           }
@@ -260,7 +260,7 @@ export default async function middleware(req: NextRequest) {
         SaveInfo(res, protocol, info);
         
         // 학생 인증 여부 확인 (학생 인증 페이지가 아닌 경우에만)
-        if (pathname !== "/verify" && !info.user.studentCertified) {
+        if (pathname !== "/verify" && info.user.status !== "가입 완료") {
           if (IsHtmlNavigation(req)) {
             return NextResponse.redirect(new URL("/verify", req.url));
           }
