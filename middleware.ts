@@ -1,4 +1,5 @@
 import { NextResponse, NextRequest } from "next/server";
+import { notFound } from "next/navigation";
 import JWT from "./types/token";
 import Me from "./types/me";
 
@@ -9,6 +10,24 @@ const PUBLIC_PATHS = [
   "/privacy", // 개인정보 처리방침
   "/terms", // 서비스 이용약관
   "/oauth", // OAuth 콜백
+];
+
+// 여기에 명시된 경로는 유저 전용 경로
+const USER_PATHS = [
+  "/verify", // 학생 인증 페이지
+  "/pending", // 가입 승인 대기 페이지
+  "/deny", // 가입 거절 페이지
+  "/ban", // 차단 안내 페이지
+  "/objection", // 차단 이의신청 페이지
+  "/my-posts", // 내 게시물 페이지
+];
+
+// 여기에 명시된 경로는 관리자 전용 경로
+const ADMIN_PATHS = [
+  "/notice/write", // 공지사항 작성 페이지
+  "/verifies", // 학생 인증 요청 관리 페이지
+  "/reports", // 신고 관리 페이지
+  "/objections", // 이의 제기 관리 페이지
 ];
 
 // 시계 오차 허용
@@ -158,9 +177,6 @@ export default async function middleware(req: NextRequest) {
   const refreshToken = GetCookie(req, "refresh_token");
   const accessExp = GetCookie(req, "access_exp");
 
-  // 관리자 확인
-  const isAdmin = Boolean(GetCookie(req, "admin"));
-
   // JWT 없을 때
   if (!accessToken && !refreshToken) {
     const hasCookies = req.cookies.getAll().length > 0;
@@ -202,8 +218,20 @@ export default async function middleware(req: NextRequest) {
         const info = await infoRes.json();
 
         const res = NextResponse.next();
+
         // 관리자용 예외 처리
-        if (isAdmin) return res;
+        const isAdmin = info.role === "ADMIN";
+        if (isAdmin) {
+          if (USER_PATHS.some((p) => pathname === p || pathname.startsWith(p + "/"))) {
+            // 관리자가 유저 전용 페이지 접근 시 차단
+            if (IsHtmlNavigation(req)) {
+              return NextResponse.redirect(new URL("/", req.url));
+            }
+            return NextResponse.json({ error: "forbidden" }, { status: 403 });
+          }
+
+          return res;
+        }
         
         // 사용자 정보 쿠키 저장
         SaveInfo(res, protocol, info);
@@ -253,6 +281,11 @@ export default async function middleware(req: NextRequest) {
             return NextResponse.redirect(new URL("/deny", req.url));
           }
           return NextResponse.json({ error: "denied_approval" }, { status: 403 });
+        }
+
+        // 유저가 관리자 전용 페이지 접근 시 차단
+        if (!isAdmin && ADMIN_PATHS.some((p) => pathname === p || pathname.startsWith(p + "/"))) {
+          return notFound();
         }
 
         return res;
@@ -296,7 +329,18 @@ export default async function middleware(req: NextRequest) {
         const info = await infoRes.json();
 
         // 관리자용 예외 처리
-        if (isAdmin) return res;
+        const isAdmin = info.role === "ADMIN";
+        if (isAdmin) {
+          if (USER_PATHS.some((p) => pathname === p || pathname.startsWith(p + "/"))) {
+            // 관리자가 유저 전용 페이지 접근 시 차단
+            if (IsHtmlNavigation(req)) {
+              return NextResponse.redirect(new URL("/", req.url));
+            }
+            return NextResponse.json({ error: "forbidden" }, { status: 403 });
+          }
+
+          return res;
+        }
         
         // 사용자 정보 쿠키 저장
         SaveInfo(res, protocol, info);
@@ -346,6 +390,11 @@ export default async function middleware(req: NextRequest) {
             return NextResponse.redirect(new URL("/deny", req.url));
           }
           return NextResponse.json({ error: "denied_approval" }, { status: 403 });
+        }
+
+        // 유저가 관리자 전용 페이지 접근 시 차단
+        if (!isAdmin && ADMIN_PATHS.some((p) => pathname === p || pathname.startsWith(p + "/"))) {
+          return notFound();
         }
       }
 

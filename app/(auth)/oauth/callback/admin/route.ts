@@ -21,17 +21,7 @@ export async function POST(
 
     await SaveJWT(adminToken);
 
-    const res = NextResponse.redirect(new URL("/", req.url));
-    res.cookies.set({
-      name: "admin",
-      value: "true",
-      httpOnly: true,
-      secure: req.nextUrl.protocol === "https:",
-      sameSite: "lax",
-      path: "/"
-    });
-
-    return res;
+    return NextResponse.redirect(new URL("/", req.url));
   } catch (error) {
     return HandleError(error, req.url);
   }
