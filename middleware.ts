@@ -144,14 +144,6 @@ function SaveInfo(
   protocol: string,
   info: Me
 ) {
-  // 유저 이메일 정보
-  SetCookie(
-    res,
-    "email",
-    info.user.email,
-    protocol
-  )
-
   // 유저 가입 상태 정보
   SetCookie(
     res,
@@ -243,6 +235,11 @@ export default async function middleware(req: NextRequest) {
         const isDenied = info.user.status === "가입 거절";
         const isBanned = info.user.status === "차단";
 
+        // 차단 안된 사용자는 차단 페이지 접근 시 차단
+        if (!isBanned && (pathname === "/ban" || pathname === "/objection")) {
+          return notFound();
+        }
+
         // 차단된 사용자는 모든 페이지 접근 차단
         if (isBanned && !(pathname === "/ban" || pathname === "/objection")) {
           if (IsHtmlNavigation(req)) {
@@ -253,10 +250,7 @@ export default async function middleware(req: NextRequest) {
 
         // 이미 인증 완료된 사용자가 인증 관련 페이지 접근 시 차단
         if (isCompleted && (pathname === "/pending" || pathname === "/verify" || pathname === "/deny")) {
-          if (IsHtmlNavigation(req)) {
-            return NextResponse.redirect(new URL("/", req.url));
-          }
-          return NextResponse.json({ error: "already_verified" }, { status: 403 });
+          return notFound();
         }
 
         // 학생 인증 필요 사용자가 인증 페이지 외 접근 시 차단
@@ -352,6 +346,11 @@ export default async function middleware(req: NextRequest) {
         const isDenied = info.user.status === "가입 거절";
         const isBanned = info.user.status === "차단";
 
+        // 차단 안된 사용자는 차단 페이지 접근 시 차단
+        if (!isBanned && (pathname === "/ban" || pathname === "/objection")) {
+          return notFound();
+        }
+
         // 차단된 사용자는 모든 페이지 접근 차단
         if (isBanned && !(pathname === "/ban" || pathname === "/objection")) {
           if (IsHtmlNavigation(req)) {
@@ -362,10 +361,7 @@ export default async function middleware(req: NextRequest) {
 
         // 이미 인증 완료된 사용자가 인증 관련 페이지 접근 시 차단
         if (isCompleted && (pathname === "/pending" || pathname === "/verify" || pathname === "/deny")) {
-          if (IsHtmlNavigation(req)) {
-            return NextResponse.redirect(new URL("/", req.url));
-          }
-          return NextResponse.json({ error: "already_verified" }, { status: 403 });
+          return notFound();
         }
 
         // 학생 인증 필요 사용자가 인증 페이지 외 접근 시 차단
