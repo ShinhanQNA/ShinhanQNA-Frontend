@@ -4,8 +4,8 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Icon from "@/components/Icon";
 import Action from "@/components/Action";
-import GetCookie from "@/utils/cookie/get";
 import GetPost from "@/utils/post/get";
+import GetEmail from "@/utils/post/email";
 import styles from "./page.module.css";
 
 export default async function Post({
@@ -20,7 +20,7 @@ export default async function Post({
 
   const imageKey = post?.imagePath ? post.imagePath.split("/").pop() : null;
 
-  const isMine = post?.writerEmail == await GetCookie("email");
+  const isMine = post?.writerEmail == await GetEmail();
 
   return (
     <main className={styles.page}>
