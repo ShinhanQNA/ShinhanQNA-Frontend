@@ -58,7 +58,7 @@ export default function Select({
         </span>
         <Icon
           name={isOpen ? "chevron-up" : "chevron-down"}
-          size={16}
+          size={18}
         />
       </div>
       {isOpen && (

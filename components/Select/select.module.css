@@ -71,12 +71,11 @@
 }
 
 .option:hover {
-  background-color: var(--theme-background-muted);
+  background-color: var(--theme-border-strong);
   color: var(--theme-text-primary);
 }
 
-.option.selected {
-  background-color: var(--theme-primary-muted);
-  color: var(--theme-primary);
+.option .selected {
+  color: var(--theme-text-primary);
   font-weight: var(--text-body-bold-2-weight);
 }
