@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import localFont from "next/font/local";
-import GetCookie from "@/utils/cookie/get";
+import GetAdmin from "@/utils/admin/get";
 import { AdminProvider } from "@/context/admin";
 import "../globals.css";
 
@@ -22,7 +22,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const isAdmin = await GetCookie("admin") === "true";
+  const isAdmin = await GetAdmin();
 
   return (
     <AdminProvider initialAdmin={isAdmin}>

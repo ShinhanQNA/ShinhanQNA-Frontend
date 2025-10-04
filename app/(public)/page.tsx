@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import MainList from "@/components/MainList";
 import Button from "@/components/Button";
 import GetCookie from "@/utils/cookie/get";
+import GetAdmin from "@/utils/admin/get";
 import GetPostList from "@/utils/post/list";
 import GetThreeWeekGroup from "@/utils/3week/group";
 import GetAnswerList from "@/utils/answer/list";
@@ -11,7 +12,7 @@ import styles from "./page.module.css";
 
 export default async function Home() {
   const accessToken = await GetCookie("access_token");
-  const isAdmin = Boolean(await GetCookie("admin"));
+  const isAdmin = await GetAdmin();
 
   return (
     <main className={styles.page}>
