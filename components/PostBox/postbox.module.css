@@ -11,10 +11,13 @@
 .opinion,
 .notice,
 .signup {
+  width: 100%;
+  max-width: 640px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  flex: 1 0 0;
+  align-content: stretch;
+  flex: 1;
   gap: 8px;
 }
 
@@ -80,5 +83,6 @@
 }
 
 .select {
-  width: 10%;
+  width: 100%;
+  max-width: 100px;
 }
