@@ -3,6 +3,7 @@ import PostBoxProps from "@/types/postbox";
 import Icon from "@/components/Icon";
 import Select from "@/components/Select";
 import Statetag from "@/components/StateTag";
+import SetStatus from "@/utils/3week/status";
 import styles from "./postbox.module.css";
 
 function Post({
@@ -62,11 +63,13 @@ function Selected({
       </Link>
       {isAdmin && (
         <Select
+          options={[
+            { label: "대기", value: "응답 대기" },
+            { label: "완료", value: "완료" }
+          ]}
+          value={{ label: "응답 상태", value: "응답 상태" }}
+          onChange={(e) => SetStatus(slug, e?.value!)}
           className={styles.select}
-          options={[]}
-          value={null}
-          onChange={() => {}}
-          placeholder="응답 상태"
         />
       )}
     </>
