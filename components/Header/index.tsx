@@ -16,7 +16,7 @@ export default function Header() {
           <Logo type="text" size={104} />
         </Link>
         <div className={styles.buttons}>
-          <Link href="/write">
+          <Link href={admin ? "/answerw" : "/write"}>
             <Button
               variant="linear"
               size="small"
@@ -60,7 +60,7 @@ export default function Header() {
           <Logo size={28} />
         </Link>
         <div className={styles.buttons}>
-          <Link href="/write">
+          <Link href={admin ? "/answerw" : "/write"}>
             <Button
               variant="linear"
               size="tiny"
@@ -80,7 +80,7 @@ export default function Header() {
             <Button
               variant="linear"
               size="tiny"
-              iconName="user"
+              iconName={admin ? "shield-user" : "user"}
               iconOnly
             />
           </Link>

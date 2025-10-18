@@ -1,7 +1,9 @@
 import { notFound } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import Action from "@/components/Action";
 import GetAnswer from "@/utils/answer/get";
+import GetAdmin from "@/utils/admin/get";
 import styles from "./page.module.css";
 
 export default async function AnswerPost({
@@ -14,6 +16,8 @@ export default async function AnswerPost({
 
   const answer = await GetAnswer(slug);
 
+  const isAdmin = await GetAdmin();
+
   return (
     <main className={styles.page}>
       <Header />
@@ -25,6 +29,15 @@ export default async function AnswerPost({
           <p className={styles.paragraph}>
             {answer.content}
           </p>
+          {isAdmin && (
+            <Action
+              type="answer"
+              id={slug}
+              isMine={isAdmin}
+              title={answer.title}
+              content={answer.content}
+            />
+          )}
         </div>
         <Footer />
       </div>
