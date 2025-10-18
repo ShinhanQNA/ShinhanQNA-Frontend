@@ -48,7 +48,7 @@ export default function Profile() {
                   </Link>
                 </div>
                 <div className={styles.actions}>
-                  <Link href="/notice/write">
+                  <Link href="/noticew">
                     <Button
                       variant="transparent"
                       iconName="panels-top-left"
