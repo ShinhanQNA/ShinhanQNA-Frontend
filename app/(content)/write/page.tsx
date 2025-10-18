@@ -38,6 +38,11 @@ export default function Write() {
       if (initialTitle) setTitle(decodeURIComponent(initialTitle));
       if (initialContent) setContent(decodeURIComponent(initialContent));
       if (initialImagePath) setExistingImagePath(initialImagePath);
+    } else {
+      // 수정 모드가 아닐 때는 state 초기화
+      setTitle("");
+      setContent("");
+      setExistingImagePath(null);
     }
   }, [isEditMode, searchParams]);
 

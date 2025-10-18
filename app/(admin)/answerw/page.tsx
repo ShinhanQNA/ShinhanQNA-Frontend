@@ -30,6 +30,10 @@ export default function AnswerWrite() {
       
       if (initialTitle) setTitle(decodeURIComponent(initialTitle));
       if (initialContent) setContent(decodeURIComponent(initialContent));
+    } else {
+      // 수정 모드가 아닐 때는 state 초기화
+      setTitle("");
+      setContent("");
     }
   }, [isEditMode, searchParams]);
 
