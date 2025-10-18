@@ -52,8 +52,9 @@ export default async function Post({
               {post.likes}
             </div>
           </div>
-          <Action 
-            postId={slug} 
+          <Action
+            type="post"
+            id={slug} 
             isMine={isMine}
             title={post.title}
             content={post.content}
