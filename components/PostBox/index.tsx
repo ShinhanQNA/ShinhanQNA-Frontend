@@ -68,7 +68,7 @@ function Selected({
             { label: "완료", value: "완료" }
           ]}
           value={{ label: "응답 상태", value: "응답 상태" }}
-          onChange={(e) => SetStatus(slug, e?.value!)}
+          onChange={(e) => SetStatus(Number(slug), e?.value!)}
           className={styles.select}
         />
       )}
@@ -95,7 +95,7 @@ function Notice({
 }
 
 function Signup({
-  path = "signupreqs",
+  path = "verireq",
   slug,
   title,
   content

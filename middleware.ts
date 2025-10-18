@@ -24,10 +24,11 @@ const USER_PATHS = [
 
 // 여기에 명시된 경로는 관리자 전용 경로
 const ADMIN_PATHS = [
-  "/notice/write", // 공지사항 작성 페이지
-  "/verifies", // 학생 인증 요청 관리 페이지
-  "/reports", // 신고 관리 페이지
-  "/objections", // 이의 제기 관리 페이지
+  "answerw", // 답변 작성 페이지
+  "/noticew", // 공지사항 작성 페이지
+  "/verireq", // 학생 인증 요청 관리 페이지
+  "/report", // 신고 관리 페이지
+  "/objreq", // 이의 제기 관리 페이지
 ];
 
 // 시계 오차 허용

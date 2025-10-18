@@ -7,6 +7,8 @@ import Modal from "@/components/Modal";
 import DeletePost from "@/utils/post/delete";
 import DeleteNotice from "@/utils/notice/delete";
 import DeleteAnswer from "@/utils/answer/delete";
+import AcceptStudent from "@/utils/verify/accept";
+import DenyStudent from "@/utils/verify/deny";
 import DoLike from "@/utils/post/like";
 import DoReport from "@/utils/post/report";
 import ActionProps from "@/types/actions";
@@ -18,13 +20,19 @@ export default function Action({
   isMine,
   title = "",
   content = "",
-  imagePath
+  imagePath,
+  email = "",
+  userName = ""
 }: ActionProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isLiking, setIsLiking] = useState(false);
   const [isReporting, setIsReporting] = useState(false);
+  const [isAccepting, setIsAccepting] = useState(false);
+  const [isDenying, setIsDenying] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [isAcceptModalOpen, setIsAcceptModalOpen] = useState(false);
+  const [isDenyModalOpen, setIsDenyModalOpen] = useState(false);
   const [selectedReportReason, setSelectedReportReason] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
@@ -77,6 +85,14 @@ export default function Action({
   const closeInfoModal = () => {
     setIsInfoModalOpen(false);
     setInfoMessage(null);
+  };
+
+  const closeAcceptModal = () => {
+    setIsAcceptModalOpen(false);
+  };
+
+  const closeDenyModal = () => {
+    setIsDenyModalOpen(false);
   };
 
   const handleDeleteConfirm = async () => {
@@ -160,10 +176,65 @@ export default function Action({
     }
   };
 
+  // 승인 버튼 클릭 핸들러
+  const handleAcceptClick = () => {
+    setIsAcceptModalOpen(true);
+  };
+
+  const handleAcceptConfirm = async () => {
+    try {
+      setIsAccepting(true);
+      await AcceptStudent(email);
+      // AcceptStudent 함수에서 redirect()가 호출되므로 별도 처리 불필요
+    } catch (error) {
+      closeAcceptModal();
+      setIsAccepting(false);
+      showErrorModal("학생 승인에 실패했습니다.");
+    }
+  };
+
+  // 거절 버튼 클릭 핸들러
+  const handleDenyClick = () => {
+    setIsDenyModalOpen(true);
+  };
+
+  const handleDenyConfirm = async () => {
+    try {
+      setIsDenying(true);
+      await DenyStudent(email);
+      // DenyStudent 함수에서 redirect()가 호출되므로 별도 처리 불필요
+    } catch (error) {
+      closeDenyModal();
+      setIsDenying(false);
+      showErrorModal("학생 거절에 실패했습니다.");
+    }
+  };
+
   return (
     <>
       <div className={styles.actions}>
-        {isMine ? (
+        {type === "verify" ? (
+          <>
+            <Button
+              size="small"
+              variant="warn"
+              iconName="x"
+              onClick={handleDenyClick}
+              disabled={isDenying || isAccepting}
+            >
+              {isDenying ? "처리 중..." : "거절"}
+            </Button>
+            <Button
+              size="small"
+              iconName="check"
+              className={styles.greeen}
+              onClick={handleAcceptClick}
+              disabled={isAccepting || isDenying}
+            >
+              {isAccepting ? "처리 중..." : "승인"}
+            </Button>
+          </>
+        ) : isMine ? (
           <>
             <Button
               size="small"
@@ -339,6 +410,72 @@ export default function Action({
       >
         <p>{error}</p>
       </Modal>
+
+      {/* 승인 확인 모달 (verify만) */}
+      {type === "verify" && (
+        <Modal
+          isOpen={isAcceptModalOpen}
+          onClose={closeAcceptModal}
+          title="학생 승인 확인"
+          actions={
+            <>
+              <Button
+                variant="linear"
+                size="small"
+                type="button"
+                onClick={closeAcceptModal}
+                disabled={isAccepting}
+              >
+                취소
+              </Button>
+              <Button
+                size="small"
+                type="button"
+                onClick={handleAcceptConfirm}
+                disabled={isAccepting}
+              >
+                승인
+              </Button>
+            </>
+          }
+        >
+          <p>{userName} 학생의 가입 요청을 승인하시겠습니까?</p>
+          <p>승인 후 해당 학생은 정상적으로 서비스를 이용할 수 있습니다.</p>
+        </Modal>
+      )}
+
+      {/* 거절 확인 모달 (verify만) */}
+      {type === "verify" && (
+        <Modal
+          isOpen={isDenyModalOpen}
+          onClose={closeDenyModal}
+          title="학생 거절 확인"
+          actions={
+            <>
+              <Button
+                variant="linear"
+                size="small"
+                onClick={closeDenyModal}
+                type="button"
+                disabled={isDenying}
+              >
+                취소
+              </Button>
+              <Button
+                size="small"
+                onClick={handleDenyConfirm}
+                type="button"
+                disabled={isDenying}
+              >
+                거절
+              </Button>
+            </>
+          }
+        >
+          <p>{userName} 학생의 가입 요청을 거절하시겠습니까?</p>
+          <p>거절 후 해당 학생은 서비스를 이용할 수 없습니다.</p>
+        </Modal>
+      )}
     </>
   );
 }

@@ -2,7 +2,7 @@ export default interface PostBoxProps {
   type: "post" | "selected" | "notice" | "signup";
   isAdmin?: boolean;
   path?: string | string[];
-  slug: number;
+  slug: number | string;
   title: string;
   content?: string;
   likes?: number;

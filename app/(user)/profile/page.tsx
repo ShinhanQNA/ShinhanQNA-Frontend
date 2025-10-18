@@ -22,7 +22,7 @@ export default function Profile() {
             {admin ? (
               <>
                 <div className={styles.actions}>
-                  <Link href="/verifies">
+                  <Link href="/verireq">
                     <Button
                       iconName="user-round-plus"
                       className={styles.button}
@@ -30,7 +30,7 @@ export default function Profile() {
                       가입 요청 검토
                     </Button>
                   </Link>
-                  <Link href="/reports">
+                  <Link href="/report">
                     <Button
                       iconName="flag"
                       className={styles.button}
@@ -38,7 +38,7 @@ export default function Profile() {
                       신고 검토
                     </Button>
                   </Link>
-                  <Link href="/objections">
+                  <Link href="/objreq">
                     <Button
                       iconName="ban"
                       className={styles.button}
