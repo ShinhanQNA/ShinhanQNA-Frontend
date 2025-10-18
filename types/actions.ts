@@ -1,5 +1,6 @@
 export default interface ActionProps {
-  postId: string;
+  type: "post" | "notice" | "answer";
+  id: string;
   isMine: boolean;
   title?: string;
   content?: string;

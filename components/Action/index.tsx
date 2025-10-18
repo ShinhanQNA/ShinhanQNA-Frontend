@@ -5,13 +5,16 @@ import { useRouter } from "next/navigation";
 import Button from "@/components/Button";
 import Modal from "@/components/Modal";
 import DeletePost from "@/utils/post/delete";
+import DeleteNotice from "@/utils/notice/delete";
+import DeleteAnswer from "@/utils/answer/delete";
 import DoLike from "@/utils/post/like";
 import DoReport from "@/utils/post/report";
 import ActionProps from "@/types/actions";
 import styles from "./action.module.css";
 
 export default function Action({
-  postId,
+  type,
+  id,
   isMine,
   title = "",
   content = "",
@@ -79,27 +82,35 @@ export default function Action({
   const handleDeleteConfirm = async () => {
     try {
       setIsDeleting(true);
-      await DeletePost(postId);
+      if (type === "post") {
+        await DeletePost(id);
+      } else if (type === "notice") {
+        await DeleteNotice(id);
+      } else if (type === "answer") {
+        await DeleteAnswer(id);
+      }
     } catch (error) {
       closeConfirmModal();
       setIsDeleting(false);
-      showErrorModal("게시물 삭제에 실패했습니다.");
+      const itemName = type === "post" ? "게시물" : type === "notice" ? "공지사항" : "답변";
+      showErrorModal(`${itemName} 삭제에 실패했습니다.`);
     }
   };
 
   // 수정 버튼 클릭 핸들러
   const handleEditClick = () => {
     const params = new URLSearchParams({
-      edit: postId,
+      edit: id,
       title: title,
       content: content
     });
     
-    if (imagePath) {
+    if (imagePath && type === "post") {
       params.set('imagePath', imagePath);
     }
     
-    router.push(`/write?${params.toString()}`);
+    const editPath = type === "post" ? "/write" : type === "notice" ? "/noticew" : "/answerw";
+    router.push(`${editPath}?${params.toString()}`);
   };
 
   // 신고 버튼 클릭 핸들러
@@ -121,7 +132,7 @@ export default function Action({
 
     try {
       setIsReporting(true);
-      const res = await DoReport(postId, trimmedReason);
+      const res = await DoReport(id, trimmedReason);
       closeReportModal();
       if (res.message === "already_reported") {
         showInfoModal("이미 해당 게시글을 신고하셨습니다.");
@@ -140,7 +151,7 @@ export default function Action({
   const handleLikeClick = async () => {
     try {
       setIsLiking(true);
-      await DoLike(postId);
+      await DoLike(id);
       // 서버 액션에서 revalidatePath로 페이지가 새로고침됨
     } catch (error) {
       showErrorModal("추천 처리에 실패했습니다.");
@@ -172,7 +183,7 @@ export default function Action({
               수정
             </Button>
           </>
-        ) : (
+        ) : type === "post" ? (
           <>
             <Button
               size="small"
@@ -192,14 +203,14 @@ export default function Action({
               {isLiking ? "처리중..." : "추천"}
             </Button>
           </>
-        )}
+        ) : null}
       </div>
 
       {/* 삭제 확인 모달 */}
       <Modal
         isOpen={isConfirmModalOpen}
         onClose={closeConfirmModal}
-        title="게시글 삭제 확인"
+        title={`${type === "post" ? "게시글" : type === "notice" ? "공지사항" : "답변"} 삭제 확인`}
         actions={
           <>
             <Button
@@ -222,16 +233,17 @@ export default function Action({
           </>
         }
       >
-        <p>이 게시글을 정말로 삭제하시겠습니까?</p>
-        <p>삭제된 게시글은 복구할 수 없습니다.</p>
+        <p>이 {type === "post" ? "게시글" : type === "notice" ? "공지사항" : "답변"}을 정말로 삭제하시겠습니까?</p>
+        <p>삭제된 {type === "post" ? "게시글" : type === "notice" ? "공지사항" : "답변"}은 복구할 수 없습니다.</p>
       </Modal>
 
-      {/* 신고 사유 선택 모달 */}
-      <Modal
-        isOpen={isReportModalOpen}
-        onClose={closeReportModal}
-        title="게시글 신고"
-        actions={
+      {/* 신고 사유 선택 모달 (게시글만) */}
+      {type === "post" && (
+        <Modal
+          isOpen={isReportModalOpen}
+          onClose={closeReportModal}
+          title="게시글 신고"
+          actions={
           <>
             <Button
               size="small"
@@ -267,15 +279,17 @@ export default function Action({
         >
           {selectedReportReason.length}/500자
         </p>
-      </Modal>
+        </Modal>
+      )}
 
-      {/* 성공 모달 */}
-      <Modal
-        isOpen={isSuccessModalOpen}
-        onClose={closeSuccessModal}
-        title="신고 완료"
-        actions={
-          <Button
+      {/* 성공 모달 (게시글만) */}
+      {type === "post" && (
+        <Modal
+          isOpen={isSuccessModalOpen}
+          onClose={closeSuccessModal}
+          title="신고 완료"
+          actions={
+            <Button
             size="small"
             onClick={closeSuccessModal}
             type="button"
@@ -285,15 +299,17 @@ export default function Action({
         }
       >
         <p>{successMessage}</p>
-      </Modal>
+        </Modal>
+      )}
 
-      {/* 정보 모달 */}
-      <Modal
-        isOpen={isInfoModalOpen}
-        onClose={closeInfoModal}
-        title="알림"
-        actions={
-          <Button
+      {/* 정보 모달 (게시글만) */}
+      {type === "post" && (
+        <Modal
+          isOpen={isInfoModalOpen}
+          onClose={closeInfoModal}
+          title="알림"
+          actions={
+            <Button
             size="small"
             onClick={closeInfoModal}
             type="button"
@@ -303,7 +319,8 @@ export default function Action({
         }
       >
         <p>{infoMessage}</p>
-      </Modal>
+        </Modal>
+      )}
 
       {/* 에러 모달 */}
       <Modal
