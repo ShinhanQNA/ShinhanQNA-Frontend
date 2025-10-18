@@ -1,5 +1,4 @@
 import { NextResponse, NextRequest } from "next/server";
-import { notFound } from "next/navigation";
 import JWT from "./types/token";
 import Me from "./types/me";
 
@@ -238,7 +237,10 @@ export default async function middleware(req: NextRequest) {
 
         // 차단 안된 사용자는 차단 페이지 접근 시 차단
         if (!isBanned && (pathname === "/ban" || pathname === "/objection")) {
-          return notFound();
+          if (IsHtmlNavigation(req)) {
+            return NextResponse.redirect(new URL("/", req.url));
+          }
+          return NextResponse.json({ error: "forbidden" }, { status: 403 });
         }
 
         // 차단된 사용자는 모든 페이지 접근 차단
@@ -251,7 +253,10 @@ export default async function middleware(req: NextRequest) {
 
         // 이미 인증 완료된 사용자가 인증 관련 페이지 접근 시 차단
         if (isCompleted && (pathname === "/pending" || pathname === "/verify" || pathname === "/deny")) {
-          return notFound();
+          if (IsHtmlNavigation(req)) {
+            return NextResponse.redirect(new URL("/", req.url));
+          }
+          return NextResponse.json({ error: "forbidden" }, { status: 403 });
         }
 
         // 학생 인증 필요 사용자가 인증 페이지 외 접근 시 차단
@@ -280,7 +285,10 @@ export default async function middleware(req: NextRequest) {
 
         // 유저가 관리자 전용 페이지 접근 시 차단
         if (!isAdmin && ADMIN_PATHS.some((p) => pathname === p || pathname.startsWith(p + "/"))) {
-          return notFound();
+          if (IsHtmlNavigation(req)) {
+            return NextResponse.redirect(new URL("/", req.url));
+          }
+          return NextResponse.json({ error: "forbidden" }, { status: 403 });
         }
 
         return res;
@@ -349,7 +357,10 @@ export default async function middleware(req: NextRequest) {
 
         // 차단 안된 사용자는 차단 페이지 접근 시 차단
         if (!isBanned && (pathname === "/ban" || pathname === "/objection")) {
-          return notFound();
+          if (IsHtmlNavigation(req)) {
+            return NextResponse.redirect(new URL("/", req.url));
+          }
+          return NextResponse.json({ error: "forbidden" }, { status: 403 });
         }
 
         // 차단된 사용자는 모든 페이지 접근 차단
@@ -362,7 +373,10 @@ export default async function middleware(req: NextRequest) {
 
         // 이미 인증 완료된 사용자가 인증 관련 페이지 접근 시 차단
         if (isCompleted && (pathname === "/pending" || pathname === "/verify" || pathname === "/deny")) {
-          return notFound();
+          if (IsHtmlNavigation(req)) {
+            return NextResponse.redirect(new URL("/", req.url));
+          }
+          return NextResponse.json({ error: "forbidden" }, { status: 403 });
         }
 
         // 학생 인증 필요 사용자가 인증 페이지 외 접근 시 차단
@@ -391,7 +405,10 @@ export default async function middleware(req: NextRequest) {
 
         // 유저가 관리자 전용 페이지 접근 시 차단
         if (!isAdmin && ADMIN_PATHS.some((p) => pathname === p || pathname.startsWith(p + "/"))) {
-          return notFound();
+          if (IsHtmlNavigation(req)) {
+            return NextResponse.redirect(new URL("/", req.url));
+          }
+          return NextResponse.json({ error: "forbidden" }, { status: 403 });
         }
       }
 
