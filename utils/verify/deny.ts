@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import GetCookie from "../cookie/get";
 
-export default async function DenyStudent(
+export default async function DenyVerify(
   email: string
 ) {
   const backendUrl = `${process.env.BACKEND_BASE_URL}/admin/users/status`;
@@ -23,7 +23,7 @@ export default async function DenyStudent(
       status: "가입 거절"
     })
   });
-  if (!res.ok) throw new Error("failed_to_deny_student");
+  if (!res.ok) throw new Error("failed_to_deny_verify");
 
   // 서버에서 바로 리다이렉트
   redirect("/verireq");
