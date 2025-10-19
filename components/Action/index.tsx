@@ -286,6 +286,7 @@ export default function Action({
           <>
             <Button
               size="small"
+              variant="linear"
               onClick={closeConfirmModal}
               type="button"
               disabled={isDeleting}
@@ -318,6 +319,7 @@ export default function Action({
           <>
             <Button
               size="small"
+              variant="linear"
               onClick={closeReportModal}
               type="button"
               disabled={isReporting}
@@ -420,8 +422,8 @@ export default function Action({
           actions={
             <>
               <Button
-                variant="linear"
                 size="small"
+                variant="linear"
                 type="button"
                 onClick={closeAcceptModal}
                 disabled={isAccepting}
@@ -453,8 +455,8 @@ export default function Action({
           actions={
             <>
               <Button
-                variant="linear"
                 size="small"
+                variant="linear"
                 onClick={closeDenyModal}
                 type="button"
                 disabled={isDenying}

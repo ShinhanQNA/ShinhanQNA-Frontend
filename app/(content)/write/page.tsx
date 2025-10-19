@@ -356,6 +356,7 @@ export default function Write() {
           <>
             <Button
               size="small"
+              variant="linear"
               onClick={closeConfirmModal}
               type="button"
             >
