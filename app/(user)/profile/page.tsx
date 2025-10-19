@@ -38,7 +38,7 @@ export default function Profile() {
                       신고 검토
                     </Button>
                   </Link>
-                  <Link href="/objreq">
+                  <Link href="/appeal">
                     <Button
                       iconName="ban"
                       className={styles.button}

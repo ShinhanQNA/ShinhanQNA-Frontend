@@ -27,7 +27,7 @@ const ADMIN_PATHS = [
   "/noticew", // 공지사항 작성 페이지
   "/verireq", // 학생 인증 요청 관리 페이지
   "/report", // 신고 관리 페이지
-  "/objreq", // 이의 제기 관리 페이지
+  "/appeal", // 이의 제기 관리 페이지
 ];
 
 // 시계 오차 허용
