@@ -7,8 +7,10 @@ import Modal from "@/components/Modal";
 import DeletePost from "@/utils/post/delete";
 import DeleteNotice from "@/utils/notice/delete";
 import DeleteAnswer from "@/utils/answer/delete";
-import AcceptStudent from "@/utils/verify/accept";
-import DenyStudent from "@/utils/verify/deny";
+import AcceptVerify from "@/utils/verify/accept";
+import DenyVerify from "@/utils/verify/deny";
+import AcceptAppeal from "@/utils/appeal/accept";
+import DenyAppeal from "@/utils/appeal/deny";
 import DoLike from "@/utils/post/like";
 import DoReport from "@/utils/post/report";
 import ActionProps from "@/types/actions";
@@ -184,12 +186,17 @@ export default function Action({
   const handleAcceptConfirm = async () => {
     try {
       setIsAccepting(true);
-      await AcceptStudent(email);
-      // AcceptStudent 함수에서 redirect()가 호출되므로 별도 처리 불필요
+      if (type === "verify") {
+        await AcceptVerify(email);
+      } else if (type === "appeal") {
+        await AcceptAppeal(id);
+      }
+      // API 함수에서 redirect()가 호출되므로 별도 처리 불필요
     } catch (error) {
       closeAcceptModal();
       setIsAccepting(false);
-      showErrorModal("학생 승인에 실패했습니다.");
+      const itemName = type === "verify" ? "학생" : "이의신청";
+      showErrorModal(`${itemName} 승인에 실패했습니다.`);
     }
   };
 
@@ -201,19 +208,24 @@ export default function Action({
   const handleDenyConfirm = async () => {
     try {
       setIsDenying(true);
-      await DenyStudent(email);
-      // DenyStudent 함수에서 redirect()가 호출되므로 별도 처리 불필요
+      if (type === "verify") {
+        await DenyVerify(email);
+      } else if (type === "appeal") {
+        await DenyAppeal(id);
+      }
+      // API 함수에서 redirect()가 호출되므로 별도 처리 불필요
     } catch (error) {
       closeDenyModal();
       setIsDenying(false);
-      showErrorModal("학생 거절에 실패했습니다.");
+      const itemName = type === "verify" ? "학생" : "이의신청";
+      showErrorModal(`${itemName} 거절에 실패했습니다.`);
     }
   };
 
   return (
     <>
       <div className={styles.actions}>
-        {type === "verify" ? (
+        {type === "verify" || type === "appeal" ? (
           <>
             <Button
               size="small"
@@ -413,12 +425,12 @@ export default function Action({
         <p>{error}</p>
       </Modal>
 
-      {/* 승인 확인 모달 (verify만) */}
-      {type === "verify" && (
+      {/* 승인 확인 모달 (verify, appeal) */}
+      {(type === "verify" || type === "appeal") && (
         <Modal
           isOpen={isAcceptModalOpen}
           onClose={closeAcceptModal}
-          title="학생 승인 확인"
+          title={type === "verify" ? "학생 승인 확인" : "이의신청 승인 확인"}
           actions={
             <>
               <Button
@@ -441,17 +453,26 @@ export default function Action({
             </>
           }
         >
-          <p>{userName} 학생의 가입 요청을 승인하시겠습니까?</p>
-          <p>승인 후 해당 학생은 정상적으로 서비스를 이용할 수 있습니다.</p>
+          {type === "verify" ? (
+            <>
+              <p>{userName} 학생의 가입 요청을 승인하시겠습니까?</p>
+              <p>승인 후 해당 학생은 정상적으로 서비스를 이용할 수 있습니다.</p>
+            </>
+          ) : (
+            <>
+              <p>{userName} 학생의 이의신청을 승인하시겠습니까?</p>
+              <p>승인 후 해당 학생은 다시 정상적으로 서비스를 이용할 수 있습니다.</p>
+            </>
+          )}
         </Modal>
       )}
 
-      {/* 거절 확인 모달 (verify만) */}
-      {type === "verify" && (
+      {/* 거절 확인 모달 (verify, appeal) */}
+      {(type === "verify" || type === "appeal") && (
         <Modal
           isOpen={isDenyModalOpen}
           onClose={closeDenyModal}
-          title="학생 거절 확인"
+          title={type === "verify" ? "학생 거절 확인" : "이의신청 거절 확인"}
           actions={
             <>
               <Button
@@ -474,8 +495,17 @@ export default function Action({
             </>
           }
         >
-          <p>{userName} 학생의 가입 요청을 거절하시겠습니까?</p>
-          <p>거절 후 해당 학생은 서비스를 이용할 수 없습니다.</p>
+          {type === "verify" ? (
+            <>
+              <p>{userName} 학생의 가입 요청을 거절하시겠습니까?</p>
+              <p>거절 후 해당 학생은 서비스를 이용할 수 없습니다.</p>
+            </>
+          ) : (
+            <>
+              <p>{userName} 학생의 이의신청을 거절하시겠습니까?</p>
+              <p>거절 후 해당 학생은 영구적으로 서비스를 이용할 수 없습니다.</p>
+            </>
+          )}
         </Modal>
       )}
     </>

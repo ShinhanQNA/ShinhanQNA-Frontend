@@ -1,5 +1,5 @@
 export default interface ActionProps {
-  type: "post" | "notice" | "answer" | "verify";
+  type: "post" | "notice" | "answer" | "verify" | "appeal";
   id: string;
   isMine: boolean;
   title?: string;
