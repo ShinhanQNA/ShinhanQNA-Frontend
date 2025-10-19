@@ -77,7 +77,7 @@ export default function NoitceWrite() {
         router.push(`/notice/${noticeId}`);
       }
     } catch (error) {
-      showErrorModal(isEditMode ? "답변 수정에 실패했습니다." : "답변 작성에 실패했습니다. 다시 시도해주세요.");
+      showErrorModal(isEditMode ? "공지사항 수정에 실패했습니다." : "공지사항 작성에 실패했습니다. 다시 시도해주세요.");
     } finally {
       setPending(false);
     }
@@ -89,7 +89,7 @@ export default function NoitceWrite() {
       <div className={styles.main}>
         <div className={styles.content}>
           <h1 className={styles.headline}>
-            {isEditMode ? "답변 수정" : "답변 작성"}
+            {isEditMode ? "공지사항 수정" : "공지사항 작성"}
           </h1>
           <form className={styles.form} onSubmit={handleSubmit}>
             <input
