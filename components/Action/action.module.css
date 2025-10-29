@@ -14,6 +14,14 @@
   background-color: var(--color-orange-800);
 }
 
+.greeen {
+  background-color: var(--theme-accent-success);
+}
+
+.greeen:hover {
+  background-color: var(--color-green-800);
+}
+
 .textarea {
   width: 100%;
   padding: 12px;

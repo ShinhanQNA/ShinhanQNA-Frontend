@@ -5,23 +5,36 @@ import { useRouter } from "next/navigation";
 import Button from "@/components/Button";
 import Modal from "@/components/Modal";
 import DeletePost from "@/utils/post/delete";
+import DeleteNotice from "@/utils/notice/delete";
+import DeleteAnswer from "@/utils/answer/delete";
+import AcceptVerify from "@/utils/verify/accept";
+import DenyVerify from "@/utils/verify/deny";
+import AcceptAppeal from "@/utils/appeal/accept";
+import DenyAppeal from "@/utils/appeal/deny";
 import DoLike from "@/utils/post/like";
 import DoReport from "@/utils/post/report";
 import ActionProps from "@/types/actions";
 import styles from "./action.module.css";
 
 export default function Action({
-  postId,
+  type,
+  id,
   isMine,
   title = "",
   content = "",
-  imagePath
+  imagePath,
+  email = "",
+  userName = ""
 }: ActionProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isLiking, setIsLiking] = useState(false);
   const [isReporting, setIsReporting] = useState(false);
+  const [isAccepting, setIsAccepting] = useState(false);
+  const [isDenying, setIsDenying] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [isAcceptModalOpen, setIsAcceptModalOpen] = useState(false);
+  const [isDenyModalOpen, setIsDenyModalOpen] = useState(false);
   const [selectedReportReason, setSelectedReportReason] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
@@ -76,30 +89,46 @@ export default function Action({
     setInfoMessage(null);
   };
 
+  const closeAcceptModal = () => {
+    setIsAcceptModalOpen(false);
+  };
+
+  const closeDenyModal = () => {
+    setIsDenyModalOpen(false);
+  };
+
   const handleDeleteConfirm = async () => {
     try {
       setIsDeleting(true);
-      await DeletePost(postId);
+      if (type === "post") {
+        await DeletePost(id);
+      } else if (type === "notice") {
+        await DeleteNotice(id);
+      } else if (type === "answer") {
+        await DeleteAnswer(id);
+      }
     } catch (error) {
       closeConfirmModal();
       setIsDeleting(false);
-      showErrorModal("게시물 삭제에 실패했습니다.");
+      const itemName = type === "post" ? "게시물" : type === "notice" ? "공지사항" : "답변";
+      showErrorModal(`${itemName} 삭제에 실패했습니다.`);
     }
   };
 
   // 수정 버튼 클릭 핸들러
   const handleEditClick = () => {
     const params = new URLSearchParams({
-      edit: postId,
+      edit: id,
       title: title,
       content: content
     });
     
-    if (imagePath) {
+    if (imagePath && type === "post") {
       params.set('imagePath', imagePath);
     }
     
-    router.push(`/write?${params.toString()}`);
+    const editPath = type === "post" ? "/write" : type === "notice" ? "/noticew" : "/answerw";
+    router.push(`${editPath}?${params.toString()}`);
   };
 
   // 신고 버튼 클릭 핸들러
@@ -121,7 +150,7 @@ export default function Action({
 
     try {
       setIsReporting(true);
-      const res = await DoReport(postId, trimmedReason);
+      const res = await DoReport(id, trimmedReason);
       closeReportModal();
       if (res.message === "already_reported") {
         showInfoModal("이미 해당 게시글을 신고하셨습니다.");
@@ -140,7 +169,7 @@ export default function Action({
   const handleLikeClick = async () => {
     try {
       setIsLiking(true);
-      await DoLike(postId);
+      await DoLike(id);
       // 서버 액션에서 revalidatePath로 페이지가 새로고침됨
     } catch (error) {
       showErrorModal("추천 처리에 실패했습니다.");
@@ -149,10 +178,75 @@ export default function Action({
     }
   };
 
+  // 승인 버튼 클릭 핸들러
+  const handleAcceptClick = () => {
+    setIsAcceptModalOpen(true);
+  };
+
+  const handleAcceptConfirm = async () => {
+    try {
+      setIsAccepting(true);
+      if (type === "verify") {
+        await AcceptVerify(email);
+      } else if (type === "appeal") {
+        await AcceptAppeal(id);
+      }
+      // API 함수에서 redirect()가 호출되므로 별도 처리 불필요
+    } catch (error) {
+      closeAcceptModal();
+      setIsAccepting(false);
+      const itemName = type === "verify" ? "학생" : "이의신청";
+      showErrorModal(`${itemName} 승인에 실패했습니다.`);
+    }
+  };
+
+  // 거절 버튼 클릭 핸들러
+  const handleDenyClick = () => {
+    setIsDenyModalOpen(true);
+  };
+
+  const handleDenyConfirm = async () => {
+    try {
+      setIsDenying(true);
+      if (type === "verify") {
+        await DenyVerify(email);
+      } else if (type === "appeal") {
+        await DenyAppeal(id);
+      }
+      // API 함수에서 redirect()가 호출되므로 별도 처리 불필요
+    } catch (error) {
+      closeDenyModal();
+      setIsDenying(false);
+      const itemName = type === "verify" ? "학생" : "이의신청";
+      showErrorModal(`${itemName} 거절에 실패했습니다.`);
+    }
+  };
+
   return (
     <>
       <div className={styles.actions}>
-        {isMine ? (
+        {type === "verify" || type === "appeal" ? (
+          <>
+            <Button
+              size="small"
+              variant="warn"
+              iconName="x"
+              onClick={handleDenyClick}
+              disabled={isDenying || isAccepting}
+            >
+              {isDenying ? "처리 중..." : "거절"}
+            </Button>
+            <Button
+              size="small"
+              iconName="check"
+              className={styles.greeen}
+              onClick={handleAcceptClick}
+              disabled={isAccepting || isDenying}
+            >
+              {isAccepting ? "처리 중..." : "승인"}
+            </Button>
+          </>
+        ) : isMine ? (
           <>
             <Button
               size="small"
@@ -172,7 +266,7 @@ export default function Action({
               수정
             </Button>
           </>
-        ) : (
+        ) : type === "post" ? (
           <>
             <Button
               size="small"
@@ -192,18 +286,19 @@ export default function Action({
               {isLiking ? "처리중..." : "추천"}
             </Button>
           </>
-        )}
+        ) : null}
       </div>
 
       {/* 삭제 확인 모달 */}
       <Modal
         isOpen={isConfirmModalOpen}
         onClose={closeConfirmModal}
-        title="게시글 삭제 확인"
+        title={`${type === "post" ? "게시글" : type === "notice" ? "공지사항" : "답변"} 삭제 확인`}
         actions={
           <>
             <Button
               size="small"
+              variant="linear"
               onClick={closeConfirmModal}
               type="button"
               disabled={isDeleting}
@@ -222,19 +317,21 @@ export default function Action({
           </>
         }
       >
-        <p>이 게시글을 정말로 삭제하시겠습니까?</p>
-        <p>삭제된 게시글은 복구할 수 없습니다.</p>
+        <p>이 {type === "post" ? "게시글" : type === "notice" ? "공지사항" : "답변"}을 정말로 삭제하시겠습니까?</p>
+        <p>삭제된 {type === "post" ? "게시글" : type === "notice" ? "공지사항" : "답변"}은 복구할 수 없습니다.</p>
       </Modal>
 
-      {/* 신고 사유 선택 모달 */}
-      <Modal
-        isOpen={isReportModalOpen}
-        onClose={closeReportModal}
-        title="게시글 신고"
-        actions={
+      {/* 신고 사유 선택 모달 (게시글만) */}
+      {type === "post" && (
+        <Modal
+          isOpen={isReportModalOpen}
+          onClose={closeReportModal}
+          title="게시글 신고"
+          actions={
           <>
             <Button
               size="small"
+              variant="linear"
               onClick={closeReportModal}
               type="button"
               disabled={isReporting}
@@ -267,15 +364,17 @@ export default function Action({
         >
           {selectedReportReason.length}/500자
         </p>
-      </Modal>
+        </Modal>
+      )}
 
-      {/* 성공 모달 */}
-      <Modal
-        isOpen={isSuccessModalOpen}
-        onClose={closeSuccessModal}
-        title="신고 완료"
-        actions={
-          <Button
+      {/* 성공 모달 (게시글만) */}
+      {type === "post" && (
+        <Modal
+          isOpen={isSuccessModalOpen}
+          onClose={closeSuccessModal}
+          title="신고 완료"
+          actions={
+            <Button
             size="small"
             onClick={closeSuccessModal}
             type="button"
@@ -285,15 +384,17 @@ export default function Action({
         }
       >
         <p>{successMessage}</p>
-      </Modal>
+        </Modal>
+      )}
 
-      {/* 정보 모달 */}
-      <Modal
-        isOpen={isInfoModalOpen}
-        onClose={closeInfoModal}
-        title="알림"
-        actions={
-          <Button
+      {/* 정보 모달 (게시글만) */}
+      {type === "post" && (
+        <Modal
+          isOpen={isInfoModalOpen}
+          onClose={closeInfoModal}
+          title="알림"
+          actions={
+            <Button
             size="small"
             onClick={closeInfoModal}
             type="button"
@@ -303,7 +404,8 @@ export default function Action({
         }
       >
         <p>{infoMessage}</p>
-      </Modal>
+        </Modal>
+      )}
 
       {/* 에러 모달 */}
       <Modal
@@ -322,6 +424,90 @@ export default function Action({
       >
         <p>{error}</p>
       </Modal>
+
+      {/* 승인 확인 모달 (verify, appeal) */}
+      {(type === "verify" || type === "appeal") && (
+        <Modal
+          isOpen={isAcceptModalOpen}
+          onClose={closeAcceptModal}
+          title={type === "verify" ? "학생 승인 확인" : "이의신청 승인 확인"}
+          actions={
+            <>
+              <Button
+                size="small"
+                variant="linear"
+                type="button"
+                onClick={closeAcceptModal}
+                disabled={isAccepting}
+              >
+                취소
+              </Button>
+              <Button
+                size="small"
+                type="button"
+                onClick={handleAcceptConfirm}
+                disabled={isAccepting}
+              >
+                승인
+              </Button>
+            </>
+          }
+        >
+          {type === "verify" ? (
+            <>
+              <p>{userName} 학생의 가입 요청을 승인하시겠습니까?</p>
+              <p>승인 후 해당 학생은 정상적으로 서비스를 이용할 수 있습니다.</p>
+            </>
+          ) : (
+            <>
+              <p>{userName} 학생의 이의신청을 승인하시겠습니까?</p>
+              <p>승인 후 해당 학생은 다시 정상적으로 서비스를 이용할 수 있습니다.</p>
+            </>
+          )}
+        </Modal>
+      )}
+
+      {/* 거절 확인 모달 (verify, appeal) */}
+      {(type === "verify" || type === "appeal") && (
+        <Modal
+          isOpen={isDenyModalOpen}
+          onClose={closeDenyModal}
+          title={type === "verify" ? "학생 거절 확인" : "이의신청 거절 확인"}
+          actions={
+            <>
+              <Button
+                size="small"
+                variant="linear"
+                onClick={closeDenyModal}
+                type="button"
+                disabled={isDenying}
+              >
+                취소
+              </Button>
+              <Button
+                size="small"
+                onClick={handleDenyConfirm}
+                type="button"
+                disabled={isDenying}
+              >
+                거절
+              </Button>
+            </>
+          }
+        >
+          {type === "verify" ? (
+            <>
+              <p>{userName} 학생의 가입 요청을 거절하시겠습니까?</p>
+              <p>거절 후 해당 학생은 서비스를 이용할 수 없습니다.</p>
+            </>
+          ) : (
+            <>
+              <p>{userName} 학생의 이의신청을 거절하시겠습니까?</p>
+              <p>거절 후 해당 학생은 영구적으로 서비스를 이용할 수 없습니다.</p>
+            </>
+          )}
+        </Modal>
+      )}
     </>
   );
 }

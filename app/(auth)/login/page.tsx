@@ -2,6 +2,7 @@
 
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import Logo from "@/components/Logo";
 import Button from "@/components/Button";
 import KakaoLogin from "@/utils/oauth/kakao";
@@ -40,13 +41,15 @@ export default function Login() {
         <div className={styles.content}>
           <Suspense>
             <KakaoLoginButton />
+          </Suspense>
+          <Link href="/login/admin">
             <Button
               variant="transparent"
               className={`${styles.button} ${styles.admin}`}
             >
               관리자 전용 로그인
             </Button>
-          </Suspense>
+          </Link>
         </div>
       </div>
     </main>
